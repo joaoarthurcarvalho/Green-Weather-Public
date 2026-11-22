@@ -1,0 +1,119 @@
+
+.page-heading{font-size:30px;font-weight:800;color:var(--border);margin-bottom:12px;letter-spacing:.2px}
+.cfg > *{max-width:820px}
+
+
+.cfg-titulo{font-size:18px;font-weight:800;color:#0d5c35;margin:20px 0 10px;letter-spacing:.3px}
+html[data-tema="escuro"] .cfg-titulo{color:var(--green)}
+
+.cfg-card{padding:4px 18px}
+.cfg-linha{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 0}
+.cfg-linha + .cfg-linha{border-top:1px solid rgba(255,255,255,.1)}
+.cfg-linha strong{display:block;font-size:15px}
+.cfg-linha small{display:block;font-size:11px;color:var(--green);margin-top:2px}
+
+/* Interruptor */
+.switch{
+  position:relative;flex:none;width:46px;height:26px;border-radius:999px;border:0;cursor:pointer;
+  background:rgba(255,255,255,.2);transition:background .2s;
+}
+.switch::after{
+  content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;
+  background:#fff;transition:transform .2s var(--ease);box-shadow:0 1px 4px rgba(0,0,0,.3);
+}
+.switch[aria-checked="true"]{background:var(--navy-3)}
+.switch[aria-checked="true"]::after{transform:translateX(20px)}
+.switch:focus-visible,.cfg-acao:focus-visible,.btn-sair:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+
+/* Acoes da conta */
+.cfg-acao{
+  display:flex;align-items:center;gap:14px;width:100%;padding:16px 4px;
+  background:none;border:0;color:#fff;font:600 14px inherit;font-family:inherit;text-align:left;cursor:pointer;
+  transition:background .15s,padding .15s;
+}
+.cfg-acao + .cfg-acao{border-top:1px solid rgba(255,255,255,.1)}
+.cfg-acao:hover{background:rgba(255,255,255,.06);padding-left:10px}
+.cfg-acao .ic{width:18px;height:18px;color:var(--green);flex:none}
+.cfg-acao .seta{width:14px;height:14px;margin-left:auto;color:var(--green);flex:none}
+
+.btn-sair{
+  display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:22px;padding:14px;
+  border-radius:12px;border:2px solid #ff6b6b;background:rgba(40,52,76,.92);color:#ff6b6b;
+  font:700 15px inherit;font-family:inherit;cursor:pointer;transition:background .2s,transform .15s;
+}
+.btn-sair:hover{background:rgba(255,107,107,.18)}
+.btn-sair:active{transform:scale(.99)}
+.btn-sair svg{width:18px;height:18px}
+
+/* Janelas (senha / e-mail) */
+dialog{
+  margin:auto;width:min(380px,92vw);padding:24px;border-radius:14px;color:#fff;
+  border:3px solid var(--border);background:linear-gradient(180deg,var(--navy-2),var(--navy-1));
+  box-shadow:0 20px 50px rgba(0,0,0,.5);
+}
+dialog::backdrop{background:rgba(5,15,40,.6)}
+dialog h3{font-size:18px;margin-bottom:14px}
+.dlg-campos{display:flex;flex-direction:column;gap:12px}
+dialog input{
+  width:100%;padding:11px 12px;border-radius:10px;border:2px solid var(--border);
+  background:#93cbe6;color:#0b1d3d;font:14px "Courier New",ui-monospace,monospace;
+}
+dialog input::placeholder{color:#1c2f52;opacity:.8}
+dialog input:focus{outline:none;box-shadow:0 0 0 3px rgba(124,252,74,.5)}
+dialog .erro{min-height:16px;margin-top:10px;font-size:12px;color:#ffd27a}
+.dlg-botoes{display:flex;justify-content:flex-end;gap:10px;margin-top:14px}
+.dlg-botoes button{padding:9px 18px;border-radius:8px;font:700 13px inherit;font-family:inherit;cursor:pointer;border:1px solid transparent}
+.dlg-ok{background:#9fe0da;color:var(--border)}
+.dlg-ok:hover{background:#b8f0ea}
+.dlg-cancelar{background:transparent;color:var(--text-soft);border-color:rgba(255,255,255,.3)!important}
+.dlg-cancelar:hover{background:rgba(255,255,255,.1)}
+
+/* Aviso rapido */
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);opacity:0;pointer-events:none;
+  background:#08183a;color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:10px;
+  padding:10px 18px;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.4);
+  transition:opacity .25s,transform .25s var(--ease);z-index:10;max-width:90vw;text-align:center;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* Componentes de configurações alinhados ao sistema visual */
+.page-heading{font-size:28px;color:var(--text);margin-bottom:24px;letter-spacing:-.7px}
+.cfg-titulo{margin:28px 0 12px;color:var(--green);font-size:13px;letter-spacing:.04em}
+.cfg-card{padding:8px 22px}
+.cfg-linha{min-height:68px;padding:16px 0}
+.cfg-linha + .cfg-linha{border-top-color:var(--border)}
+.cfg-linha strong{font-size:14px}
+.cfg-linha small{font-size:12px;color:var(--muted)}
+.switch{border:1px solid var(--border);background:#334458}
+.switch[aria-checked="true"]{background:#31855a}
+.cfg-acao{min-height:56px;padding:16px 4px;color:var(--text-soft);font-family:inherit;font-size:14px;font-weight:600}
+.cfg-acao + .cfg-acao{border-top-color:var(--border)}
+.cfg-acao:hover{padding-left:10px;background:rgba(255,255,255,.035)}
+.cfg-acao .ic,.cfg-acao .seta{color:var(--green)}
+.btn-sair{
+  min-height:50px;margin-top:24px;padding:13px;border:1px solid rgba(241,125,125,.42);
+  background:rgba(241,125,125,.07);font-family:inherit;font-size:14px;font-weight:700;
+}
+.btn-sair:hover{background:rgba(241,125,125,.13)}
+dialog{
+  border:1px solid var(--border);border-radius:18px;
+  background:var(--navy-1);box-shadow:0 24px 64px rgba(0,0,0,.4);
+}
+dialog input{
+  min-height:44px;padding:11px 12px;border:1px solid var(--border);
+  border-radius:10px;background:var(--bg);color:var(--text);
+  font:inherit;font-size:14px;
+}
+dialog input::placeholder{color:var(--muted)}
+dialog input:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(119,214,160,.14)}
+.dlg-botoes button{min-height:40px;border-radius:9px;font:inherit;font-size:13px;font-weight:700}
+.dlg-ok{background:#31855a;color:#fff}
+.dlg-ok:hover{background:#3a9a69}
+.dlg-cancelar{color:var(--text-soft);border-color:var(--border)!important}
+.dlg-cancelar:hover{background:rgba(255,255,255,.05)}
+.toast{border-color:var(--border);border-radius:12px;background:#17283a}
+@media(max-width:560px){
+  .cfg-card{padding:6px 16px}
+  .cfg-linha{gap:12px}
+}

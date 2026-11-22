@@ -1,0 +1,73 @@
+﻿EvidÃªncias de validaÃ§Ã£o do Green Weather
+Data/hora local: 2026-11-22 17:56:25 -03:00
+Node.js: v24.15.0
+
+=== Complete test suite ===
+> npm test
+
+> green-weather@1.0.0 test
+> node --test
+
+✔ filtra alarmes pelo instante e não abre offline para sensores de demonstração (5.0536ms)
+✔ persiste limites climáticos alterados e os aplica às novas leituras (5.8479ms)
+✔ estima cruzamento de limite dentro do horizonte (2.3088ms)
+✔ marca como demonstrativa a previsão do sensor de demonstração (0.3238ms)
+✔ não prevê com poucos dados, leitura antiga ou variável já fora da faixa (1.2437ms)
+✔ não extrapola quando o limite está além das próximas três horas (0.2472ms)
+✔ informa quando não há leituras dentro da janela analisada (0.2055ms)
+✔ superadmin consulta todas as propriedades e engenheiros veem apenas as próprias (412.1537ms)
+✔ salva relatórios técnicos por usuário e mantém os registros após reiniciar (695.0579ms)
+✔ resume leituras, tendências, alarmes e sensores offline (2.2092ms)
+✔ explica quando não há leituras recentes (0.2579ms)
+✔ gera anomalias ocasionais e as mantém fora das faixas climáticas padrão (2.3379ms)
+✔ mantém as leituras normais dentro das faixas climáticas padrão (0.2991ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 838.606
+Exit code: 0
+
+=== Authentication test ===
+> node C:\Users\Info\Desktop\Green-Weather-Public-development\segurança\testes\testar-autenticacao.js
+✔ salva relatórios técnicos por usuário e mantém os registros após reiniciar (719.113ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 795.7582
+Exit code: 0
+
+=== IDOR test ===
+> node C:\Users\Info\Desktop\Green-Weather-Public-development\segurança\testes\testar-idor.js
+✔ superadmin consulta todas as propriedades e engenheiros veem apenas as próprias (376.1843ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 450.0461
+Exit code: 0
+
+=== Server syntax ===
+> node --check src/server.js
+Exit code: 0
+
+=== Domain syntax ===
+> node --check src/domain/alarmes.js
+Exit code: 0
+
+=== Test syntax ===
+> node --check tests/propriedades.test.js
+Exit code: 0
+
+RESULTADO FINAL: APROVADO
+Log salvo em: C:\Users\Info\Desktop\Green-Weather-Public-development\segurança\testes\..\evidencias\validacao-2026-11-22_17-56-25.log

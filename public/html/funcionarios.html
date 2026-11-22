@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Green Weather · Funcionários</title>
+  <link rel="icon" href="../assets/logo.svg">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/configuracoes.css">
+  <link rel="stylesheet" href="../css/gestao.css">
+  <script src="../js/api.js"></script>
+  <script>GW.exigirPapel("superadmin");</script>
+  <script src="../js/preferencias.js"></script>
+  <script src="../js/relogio.js" defer></script>
+</head>
+<body>
+<header class="header">
+  <div class="brand">
+    <img src="../assets/logo.svg" alt="Logo Green Weather">
+    <div class="brand-text"><small>GREEN</small><strong>Weather</strong></div>
+  </div>
+  <div class="welcome"><div class="welcome-text"><span>Bem-vindo</span><span data-user-name>—</span></div></div>
+  <button type="button" class="theme-toggle" role="switch" aria-checked="false" data-theme-toggle aria-label="Ativar tema escuro" title="Ativar tema escuro">
+    <svg class="theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>
+    <svg class="theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13z"/></svg>
+  </button>
+  <div class="clock">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>
+    <div class="clock-text"><div class="clock-day" id="dia">—</div><div id="data">—</div><div class="clock-time" id="hora">—</div></div>
+  </div>
+</header>
+<nav class="sidebar" aria-label="Navegação principal">
+  <a href="dashboard.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8v10H3z"/></svg>Início
+  </a>
+  <a href="historico.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Histórico
+  </a>
+  <a href="configuracoes.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>Configurações
+  </a>
+</nav>
+<main class="management">
+  <h1 class="page-heading">Funcionários</h1>
+  <p class="management-intro">Crie contas de acesso. O funcionário receberá uma matrícula gerada automaticamente.</p>
+  <div class="management-tabs" role="tablist" aria-label="Gestão de funcionários">
+    <button type="button" id="tab-funcionarios" class="management-tab active" role="tab"
+      aria-selected="true" aria-controls="painel-funcionarios">Funcionários</button>
+    <button type="button" id="tab-senha-do-dia" class="management-tab" role="tab"
+      aria-selected="false" aria-controls="painel-senha-do-dia" tabindex="-1">Senha do dia</button>
+  </div>
+  <div id="painel-funcionarios" role="tabpanel" aria-labelledby="tab-funcionarios">
+  <section class="card">
+    <form class="management-form" id="form-funcionario" novalidate>
+      <div class="management-field management-full">
+        <label for="nome-funcionario">Nome completo</label>
+        <input id="nome-funcionario" name="nome" autocomplete="name" maxlength="120" required>
+      </div>
+      <div class="management-field">
+        <label for="email-funcionario">E-mail</label>
+        <input id="email-funcionario" name="email" type="email" autocomplete="email" maxlength="120" required>
+      </div>
+      <div class="management-field">
+        <label for="papel-funcionario">Perfil</label>
+        <select id="papel-funcionario" name="papel">
+          <option value="funcionario">Funcionário</option>
+          <option value="engenheiro">Engenheiro agrônomo</option>
+        </select>
+      </div>
+      <div class="management-field management-full">
+        <label for="senha-funcionario">Senha inicial</label>
+        <div class="password-field management-password">
+          <input id="senha-funcionario" name="senha" type="password" autocomplete="new-password" minlength="6" maxlength="200" required>
+          <button class="password-toggle" type="button" aria-label="Mostrar senha" aria-pressed="false" data-password-toggle="senha-funcionario">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <small>Mínimo de 6 caracteres. O funcionário poderá alterá-la em Configurações.</small>
+      </div>
+      <div class="management-actions">
+        <button class="btn btn-primary" type="submit" id="salvar-funcionario">Criar funcionário</button>
+        <p class="management-message" id="mensagem-funcionario" role="status" aria-live="polite"></p>
+      </div>
+    </form>
+  </section>
+  <section class="management-list">
+    <h2>Contas cadastradas</h2>
+    <p class="management-message" id="mensagem-lista" role="status" aria-live="polite"></p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Matrícula</th><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Status</th><th>Ações</th></tr></thead>
+        <tbody id="lista-funcionarios"><tr><td colspan="6" class="empty">Carregando contas…</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+  </div>
+  <section id="painel-senha-do-dia" class="card daily-password" role="tabpanel"
+    aria-labelledby="tab-senha-do-dia" hidden>
+    <h2>Senha do dia</h2>
+    <p>Compartilhe este código apenas com funcionários que precisam acessar o sistema. Ele muda diariamente.</p>
+    <p class="daily-password-date">Válida para: <strong id="data-senha-do-dia">Carregando…</strong></p>
+    <p class="daily-password-code"><code id="codigo-senha-do-dia" aria-live="polite">••••••••••</code></p>
+    <p class="management-message" id="mensagem-senha-do-dia" role="status" aria-live="polite"></p>
+    <button type="button" class="management-tab" id="atualizar-senha-do-dia">Gerar nova senha</button>
+  </section>
+</main>
+<script src="../js/gestao-funcionarios.js"></script>
+</body>
+</html>

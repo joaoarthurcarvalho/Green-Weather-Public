@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Green Weather · Login</title>
+<link rel="icon" href="../assets/logo.svg">
+<link rel="stylesheet" href="../css/auth.css">
+<script src="../js/api.js"></script>
+<script>GW.redirecionarSeLogado();</script>
+</head>
+<body>
+<form class="panel" id="form" novalidate>
+  <img class="logo" src="../assets/logo.svg" alt="Logo Green Weather">
+  <div class="wordmark"><small>GREEN</small><strong>Weather</strong></div>
+  <h1>Login</h1>
+
+  <div id="credenciais">
+    <input type="email" id="email" placeholder="Seu E-Mail" aria-label="E-mail" autocomplete="email" required>
+    <div class="password-field">
+      <input type="password" id="senha" placeholder="Sua senha" aria-label="Senha" autocomplete="current-password" required>
+      <button class="password-toggle" type="button" aria-label="Mostrar senha" aria-pressed="false" data-password-toggle="senha">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+    </div>
+  </div>
+  <div id="campo-senha-do-dia" hidden>
+    <label for="senha-do-dia">Senha do dia</label>
+    <input type="text" id="senha-do-dia" placeholder="Digite a senha informada pelo superadmin"
+      aria-label="Senha do dia" autocomplete="one-time-code" autocapitalize="characters"
+      maxlength="10" spellcheck="false">
+    <p class="alt">Solicite a senha do dia ao superadministrador.</p>
+    <button type="button" class="alt" id="voltar-login">Voltar</button>
+  </div>
+  <p class="erro" id="erro" role="alert"></p>
+
+  <button type="submit" class="btn" id="enviar">Entrar</button>
+  <p class="alt">Acesso restrito. Solicite sua conta ao superadministrador.</p>
+</form>
+
+<script>
+let credenciaisLogin;
+const credenciais = document.getElementById("credenciais");
+const campoSenhaDoDia = document.getElementById("campo-senha-do-dia");
+const campoCodigo = document.getElementById("senha-do-dia");
+const botaoEntrar = document.getElementById("enviar");
+const textoBotaoEntrar = botaoEntrar.textContent;
+
+document.getElementById("voltar-login").addEventListener("click", () => {
+  credenciaisLogin = null;
+  campoCodigo.value = "";
+  campoSenhaDoDia.hidden = true;
+  credenciais.hidden = false;
+  botaoEntrar.textContent = textoBotaoEntrar;
+  document.getElementById("erro").textContent = "";
+});
+
+document.getElementById("form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const erro = document.getElementById("erro"), btn = botaoEntrar;
+  const email = credenciaisLogin ? credenciaisLogin.email : document.getElementById("email").value;
+  const senha = credenciaisLogin ? credenciaisLogin.senha : document.getElementById("senha").value;
+  erro.textContent = "";
+  if (!credenciaisLogin && (!email.trim() || !senha)){ erro.textContent = "Preencha e-mail e senha."; return; }
+  if (credenciaisLogin && !campoCodigo.value.trim()){ erro.textContent = "Digite a senha do dia."; return; }
+  btn.disabled = true;
+  try {
+    const resposta = await GW.entrar(email, senha, credenciaisLogin ? campoCodigo.value : undefined);
+    if (resposta.etapa === "senha_diaria") {
+      credenciaisLogin = { email, senha };
+      credenciais.hidden = true;
+      campoSenhaDoDia.hidden = false;
+      campoCodigo.focus();
+      btn.textContent = "Validar senha do dia";
+      return;
+    }
+    location.href = "dashboard.html";
+  } catch (err) {
+    erro.textContent = err.message;
+    if (credenciaisLogin) campoCodigo.value = "";
+  } finally {
+    btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>

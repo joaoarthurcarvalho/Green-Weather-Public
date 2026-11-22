@@ -1,0 +1,112 @@
+
+.page-heading{font-size:30px;font-weight:800;color:var(--border);margin-bottom:16px;letter-spacing:.2px}
+
+/* Filtro */
+.filter{display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px 20px;margin-bottom:18px}
+.filter-info{flex:1 1 200px;min-width:180px}
+.filter-info h2{margin-bottom:4px;font-size:14px}
+.filter-info p{font-size:11px;color:var(--muted)}
+.field{display:flex;flex-direction:column;gap:5px;flex:0 1 170px}
+.field label{font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);font-weight:700}
+.field input[type="date"]{
+  width:100%;padding:8px 10px;border-radius:8px;
+  background:rgba(8,20,48,.55);border:1px solid rgba(255,255,255,.2);
+  color:#fff;font:inherit;font-size:13px;color-scheme:dark;
+  transition:border-color .2s,box-shadow .2s;
+}
+.field input[type="date"]:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(124,252,74,.2)}
+.btn{
+  padding:9px 18px;border-radius:8px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;
+  border:1px solid transparent;transition:transform .15s var(--ease),background .2s,border-color .2s;
+}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:#01329b;color:var(--border)}
+.btn-primary:hover{background:#3a63c4}
+.btn-ghost{background:transparent;color:var(--text-soft);border-color:rgba(255,255,255,.3)}
+.btn-ghost:hover{background:rgba(255,255,255,.1)}
+.filter-error{width:100%;font-size:11px;color:var(--warn);min-height:0}
+
+.period-value{font-size:24px}
+.stats.historico-resumo{grid-auto-rows:1fr}
+.stats.historico-resumo .card{height:auto;align-self:stretch;display:flex;flex-direction:column}
+.stats.historico-resumo .card:last-child{padding:14px 24px}
+.stats.historico-resumo .card .card-title{margin-bottom:8px}
+.stats.historico-resumo .card:not(:last-child) .vista-grafico{margin-top:8px}
+.stats.historico-resumo .g-trilho{height:18px;margin:20px 0 12px}
+.stats.historico-resumo .g-preench{top:3px;bottom:3px}
+.stats.historico-resumo .g-ideal{top:-3px;bottom:-3px}
+.stats.historico-resumo .g-marca{top:-5px;height:28px}
+.stats.historico-resumo .card:last-child #alm-freq{display:flex;flex:1;flex-direction:column}
+.stats.historico-resumo .card:last-child .alm-grafico{margin-top:auto}
+.stats.historico-resumo .card:last-child .alm-barras{height:32px;margin:8px 0 4px}
+.stats.historico-resumo .card:last-child .alm-chips{margin-top:4px}
+
+/* Tabela do historico */
+.table-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.table-head h2{margin:0}
+.table-head span{font-size:11px;color:var(--muted)}
+.table-foot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-top:12px;font-size:10px;color:var(--muted)}
+.tag-max{
+  display:inline-block;margin-left:10px;padding:2px 7px;border-radius:5px;
+  background:rgba(124,224,218,.18);color:#9fe0da;font-size:9px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+}
+tr.is-max td{background:rgba(255,255,255,.05)}
+.empty{text-align:center;color:var(--muted);padding:28px 10px!important}
+
+/* Componentes de histórico alinhados ao sistema visual */
+.page-heading{font-size:28px;color:var(--text);margin-bottom:24px;letter-spacing:-.7px}
+.filter{gap:16px;margin-bottom:20px}
+.filter-info h2{font-size:16px}
+.filter-info p{font-size:13px;color:var(--muted)}
+.field{gap:7px;flex-basis:176px}
+.field label{font-size:11px;letter-spacing:.04em;text-transform:none;color:var(--muted)}
+.field input[type="date"]{
+  min-height:44px;padding:10px 12px;border-radius:10px;background:var(--bg);
+  border:1px solid var(--border);color:var(--text);font-size:14px;
+}
+.field input[type="date"]:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(119,214,160,.14)}
+.btn{
+  min-height:44px;padding:10px 18px;border-radius:10px;font-size:13px;
+  transition:transform .15s,background .2s,border-color .2s,box-shadow .2s;
+}
+.btn-primary{background:#31855a;color:#fff}
+.btn-primary:hover{background:#3a9a69;box-shadow:0 5px 14px rgba(49,133,90,.2)}
+.btn-ghost{background:transparent;color:var(--text-soft);border-color:var(--border)}
+.btn-ghost:hover{background:rgba(255,255,255,.05);border-color:#496275}
+.filter-error{font-size:12px;color:var(--warn)}
+.period-value{font-size:24px}
+.table-head h2{font-size:17px}
+.table-head span,.table-foot{font-size:12px}
+.tag-max{padding:3px 8px;border-radius:999px;background:rgba(119,214,160,.12);color:#a7e7c1;font-size:10px}
+tr.is-max td{background:rgba(119,214,160,.035)}
+.historico-scroll,.alm-registros .table-wrap{
+  max-height:520px;overflow:auto;overscroll-behavior:contain;
+  scrollbar-width:thin;scrollbar-color:#315b88 transparent;
+}
+.historico-scroll thead th,.alm-registros .table-wrap thead th{
+  position:sticky;top:0;z-index:1;background:var(--navy-2);
+}
+.historico-scroll:focus-visible,.alm-registros .table-wrap:focus-visible{
+  outline:3px solid rgba(119,214,160,.8);outline-offset:3px;
+}
+.climate-limits{margin-top:24px}
+.climate-limits[hidden]{display:none}
+.climate-limits h2{margin-bottom:6px;font-size:17px}
+.climate-limits>p{margin-bottom:18px;color:var(--muted);font-size:13px}
+.climate-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.climate-form .field{display:flex;flex-direction:column;gap:7px;min-width:0}
+.climate-form .field label{font-size:12px;color:var(--text-soft);font-weight:650}
+.climate-form .field input{
+  min-height:44px;width:100%;padding:10px 12px;border:1px solid var(--border);
+  border-radius:10px;background:var(--bg);color:var(--text);font:inherit;font-size:14px;
+}
+.climate-form .field input:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(119,214,160,.14)}
+.climate-actions{grid-column:1/-1;display:flex;align-items:center;gap:12px}
+.climate-actions .management-message{min-height:20px;color:var(--muted);font-size:13px}
+.climate-actions .management-message.success{color:var(--green)}
+.climate-actions .management-message.error{color:var(--danger)}
+@media(max-width:600px){
+  .climate-form{grid-template-columns:1fr}
+  .climate-actions{grid-column:auto;align-items:stretch;flex-direction:column}
+  .climate-actions .btn{width:100%}
+}

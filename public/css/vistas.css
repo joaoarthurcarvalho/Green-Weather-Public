@@ -1,0 +1,31 @@
+/* =========================================================
+   Green Weather vistas "com grafico" e "sem grafico"
+   ========================================================= */
+.sem-graficos .vista-grafico{display:none!important}
+html:not(.sem-graficos) .vista-texto{display:none!important}
+
+/* ---------- Historico: cartoes em formato de medidor ---------- */
+.g-topo{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 12px}
+.g-valor{font-size:30px;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums}
+.g-valor-sm{font-size:24px}
+.g-quando{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+
+.g-trilho{position:relative;height:10px;margin:14px 0 8px;border-radius:999px;background:rgba(255,255,255,.12)}
+.g-preench{position:absolute;left:0;top:2px;bottom:2px;border-radius:999px;background:linear-gradient(90deg,#4fb3ff,var(--green))}
+.g-trilho.fora .g-preench{background:linear-gradient(90deg,#2d6fa1,#ad630f)}
+.g-ideal{position:absolute;top:-2px;bottom:-2px;border-radius:6px;background:rgba(124,252,74,.16);border:1px solid rgba(124,252,74,.55)}
+.g-marca{position:absolute;top:-4px;width:4px;height:18px;border-radius:2px;background:#fff;transform:translateX(-50%);box-shadow:0 0 6px rgba(0,0,0,.5)}
+.g-escala{display:flex;justify-content:space-between;gap:8px;font-size:9px;letter-spacing:.4px;text-transform:uppercase;color:var(--muted)}
+
+/* Periodo: barras de leituras por dia */
+.p-barras{display:flex;align-items:flex-end;gap:3px;height:36px;margin:12px 0 8px}
+.p-barra{flex:1;min-width:3px;border-radius:3px 3px 0 0;background:linear-gradient(180deg,#006bbd,var(--blue))}
+.p-barra.vazia{background:rgba(255,255,255,.15)}
+
+/* ---------- Dashboard: evolucao em formato de texto/tabela ---------- */
+.evo-resumo{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:14px}
+.evo-bloco{padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.07)}
+.evo-bloco h4{margin-bottom:8px;font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:var(--text-soft)}
+.evo-bloco dl{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center}
+.evo-bloco dt{font-size:9px;letter-spacing:.5px;text-transform:uppercase;color:var(--muted)}
+.evo-bloco dd{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}

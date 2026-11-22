@@ -1,0 +1,26 @@
+.resumo-card,.previsao-card{margin-top:20px}
+.resumo-cabecalho{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.resumo-cabecalho h2{margin-bottom:5px}
+.resumo-cabecalho p,.resumo-nota{color:var(--muted);font-size:12px;line-height:1.5}
+.resumo-selo{flex:none;padding:5px 10px;border:1px solid rgba(107,168,255,.3);border-radius:999px;color:var(--blue);font-size:11px;font-weight:700}
+.resumo-texto{margin-top:16px;font-size:14px;line-height:1.6;color:var(--text-soft)}
+.resumo-destaques{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px;margin:14px 0 0;padding:0;list-style:none}
+.resumo-destaque{padding:10px 12px;border:1px solid rgba(255,255,255,.12);border-radius:10px;background:rgba(255,255,255,.035);font-size:12px;line-height:1.5}
+.resumo-destaque.sucesso{border-color:rgba(124,252,74,.24)}
+.resumo-destaque.aviso{border-color:rgba(240,160,75,.38)}
+.resumo-nota{margin-top:12px;font-size:11px}
+.previsao-cabecalho{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.previsao-cabecalho h2{margin-bottom:5px}
+.previsao-cabecalho p,.previsao-nota{color:var(--muted);font-size:12px;line-height:1.5}
+.previsao-selo{flex:none;padding:5px 10px;border:1px solid rgba(124,252,74,.3);border-radius:999px;color:var(--green);font-size:11px;font-weight:700}
+.previsao-lista{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-top:16px}
+.previsao-item{display:flex;flex-direction:column;gap:6px;padding:12px;border:1px solid rgba(255,255,255,.12);border-radius:10px;background:rgba(255,255,255,.035)}
+.previsao-item strong{font-size:13px}
+.previsao-demo{display:inline-block;width:max-content;padding:3px 7px;border-radius:999px;background:rgba(240,160,75,.14);color:var(--warn);font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.previsao-item span{font-size:12px;line-height:1.5;color:var(--text-soft)}
+.previsao-item small{font-size:11px;color:var(--muted)}
+.previsao-vazio{grid-column:1/-1;padding:12px 0;color:var(--text-soft);font-size:13px}
+.previsao-nota{margin-top:12px;font-size:11px}
+html[data-tema="claro"] .previsao-item{border-color:var(--border);background:rgba(27,54,38,.025)}
+html[data-tema="claro"] .resumo-destaque{border-color:var(--border);background:rgba(27,54,38,.025)}
+@media(max-width:560px){.resumo-cabecalho,.previsao-cabecalho{flex-direction:column}}

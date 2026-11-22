@@ -1,0 +1,35 @@
+[
+  {
+    "id": "e0d9c70b-8982-4d5c-a555-510dee4a943b",
+    "nome": "Sitio Burguesinha",
+    "municipio": "Cabo de Santo Agostinho",
+    "uf": "PE",
+    "areaHa": 12,
+    "responsavel": "24535954-9655-42e5-a419-a4d76f46fca8",
+    "criadaEm": "2026-11-21T00:08:42.490Z",
+    "sensores": [
+      "demo-previsao",
+      "sensor-01",
+      "sensor-02",
+      "sensor-03",
+      "sensor-04",
+      "sensor-05",
+      "sensor-06",
+      "sensor-07",
+      "sensor-08",
+      "sensor-09",
+      "sensor-10",
+      "sensor-11",
+      "sensor-12"
+    ]
+  },
+  {
+    "id": "c885b24f-cc71-4c0b-8049-e54001e8fa55",
+    "nome": "Sitio vazio",
+    "municipio": "Cabo de Santo Agostinho",
+    "uf": "PE",
+    "areaHa": 16,
+    "responsavel": "e962ec4f-473d-44d3-8bea-073d6a841188",
+    "criadaEm": "2026-11-22T18:05:01.229Z"
+  }
+]
