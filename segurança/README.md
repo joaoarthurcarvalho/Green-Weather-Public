@@ -37,11 +37,13 @@ propriedades:
 - Um sensor pertence à propriedade à qual está vinculado.
 - A propriedade pertence ao usuário indicado em `responsavel`.
 - Engenheiros acessam somente sensores de suas propriedades.
-- Usuários sem propriedade vinculada não recebem dados de sensores.
+- Funcionários comuns podem consultar todos os sensores e dados relacionados em
+  modo somente leitura; não podem consultar, criar ou editar propriedades.
 - O superadmin mantém acesso global.
-- Sensores sem propriedade vinculada não ficam visíveis aos usuários comuns.
-- Consultas por um sensor fora do escopo retornam 404, sem revelar se o sensor
-  existe.
+- Para engenheiros, sensores fora do escopo e IDs não vinculados retornam 404,
+  sem revelar se o sensor existe. Funcionários têm escopo global de leitura,
+  então podem consultar qualquer sensor existente, mas não podem alterar
+  propriedade ou vínculo.
 - A edição de uma propriedade exige que ela pertença ao usuário autenticado ou
   que o usuário seja superadmin. O responsável não é aceito do corpo enviado
   pelo cliente.
@@ -49,9 +51,11 @@ propriedades:
   salvos anteriormente também são recalculados antes de serem retornados.
 
 O escopo é aplicado às APIs de sensores, leituras, alarmes, resumo, previsão,
-resumo inteligente e relatórios. Os testes de integração em
-`test/propriedades.test.js` verificam acesso entre dois responsáveis, alteração
-de ID na consulta, dados agregados e relatórios salvos.
+resumo inteligente e relatórios. Funcionários comuns não têm autorização para
+criar ou editar propriedades, e atribuir sensores continua sendo exclusivo do
+superadmin. Os testes de integração em `test/propriedades.test.js` verificam
+acesso entre responsáveis, alteração de ID, leitura global para funcionário e
+negação de alterações.
 
 ### Limitações e próximos passos
 
@@ -63,9 +67,10 @@ de ID na consulta, dados agregados e relatórios salvos.
   `SENSOR_API_KEY`, não uma credencial individual por sensor. Proteja essa chave
   e planeje credenciais por dispositivo antes de expor a ingestão em ambientes
   não confiáveis.
-- A associação atual é feita pela propriedade responsável. Usuários sem
-  propriedades sob sua responsabilidade não têm sensores associados por este
-  modelo.
+- A associação dos engenheiros é feita pela propriedade responsável.
+- Funcionários comuns têm acesso global de leitura por decisão de produto; se
+  isso mudar, será necessário criar uma associação explícita funcionário–
+  propriedade e revisar os testes de autorização.
 - Os limites climáticos são uma configuração compartilhada, não uma configuração
   isolada por propriedade.
 

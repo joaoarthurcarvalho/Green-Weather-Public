@@ -234,11 +234,52 @@ test("superadmin consulta todas as propriedades e engenheiros veem apenas as pr�
       headers: { Cookie: funcionarioCookie }
     });
     assert.equal(resumoFuncionario.status, 200);
-    assert.equal((await resumoFuncionario.json()).sensoresTotal, 0);
+    assert.equal((await resumoFuncionario.json()).sensoresTotal, 2);
+
+    const historicoFuncionario = await fetch(`${base}/api/leituras`, {
+      headers: { Cookie: funcionarioCookie }
+    });
+    assert.equal(historicoFuncionario.status, 200);
+    assert.deepEqual(
+      (await historicoFuncionario.json()).leituras.map(leitura => leitura.sensor).sort(),
+      ["sensor-a", "sensor-b"]
+    );
+
+    const historicoFuncionarioPorId = await fetch(`${base}/api/leituras?sensor=sensor-b`, {
+      headers: { Cookie: funcionarioCookie }
+    });
+    assert.equal(historicoFuncionarioPorId.status, 200);
+    assert.deepEqual(
+      (await historicoFuncionarioPorId.json()).leituras.map(leitura => leitura.sensor),
+      ["sensor-b"]
+    );
+
+    const alarmesFuncionario = await fetch(`${base}/api/alarmes`, {
+      headers: { Cookie: funcionarioCookie }
+    });
+    assert.equal(alarmesFuncionario.status, 200);
+    const dadosAlarmesFuncionario = await alarmesFuncionario.json();
+    assert.ok(dadosAlarmesFuncionario.alarmes.some(alarme => alarme.sensor === "sensor-a"));
+    assert.ok(dadosAlarmesFuncionario.alarmes.some(alarme => alarme.sensor === "sensor-b"));
+
     const propriedadesFuncionario = await fetch(`${base}/api/propriedades`, {
       headers: { Cookie: funcionarioCookie }
     });
     assert.equal(propriedadesFuncionario.status, 403);
+
+    const criarPropriedadeFuncionario = await fetch(`${base}/api/propriedades`, {
+      method: "POST",
+      headers: { Cookie: funcionarioCookie, "Content-Type": "application/json" },
+      body: JSON.stringify({ nome: "Propriedade indevida", municipio: "Campinas", uf: "SP", areaHa: 1 })
+    });
+    assert.equal(criarPropriedadeFuncionario.status, 403);
+
+    const alterarPropriedadeFuncionario = await fetch(`${base}/api/propriedades`, {
+      method: "PATCH",
+      headers: { Cookie: funcionarioCookie, "Content-Type": "application/json" },
+      body: JSON.stringify({ id: fazendaAdmin.id, nome: "Alteração indevida", areaHa: 1 })
+    });
+    assert.equal(alterarPropriedadeFuncionario.status, 403);
   } finally {
     await pararServidor(child);
     fs.rmSync(dir, { recursive: true, force: true });

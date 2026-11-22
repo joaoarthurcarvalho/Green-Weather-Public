@@ -8,16 +8,31 @@ Execute os comandos na raiz do projeto.
 npm test
 ```
 
-## Testes de isolamento de sensores e propriedades
+## Autenticação
 
 ```powershell
-node --test test/propriedades.test.js
+node segurança/testes/testar-autenticacao.js
 ```
 
-Esse teste de integração verifica que um engenheiro não recebe dados de sensor
-associado à propriedade de outro responsável, que alterar o ID consultado não
-contorna a autorização, e que alarmes, resumos e relatórios respeitam o escopo.
-Também verifica a proteção de relatórios salvos legados.
+O script executa o teste de integração de autenticação: senha diária,
+autenticação do superadmin, código incorreto ou expirado após rotação,
+permissão de consulta e persistência após reiniciar o servidor de teste.
+
+## IDOR e isolamento de sensores
+
+```powershell
+node segurança/testes/testar-idor.js
+```
+
+O script verifica que um engenheiro não recebe dados de sensores de outro
+responsável e que alterar o ID consultado não contorna a autorização. Também
+confirma que funcionários podem consultar o histórico e alarmes de todos os
+sensores, mas recebem 403 ao tentar consultar, criar ou editar propriedades.
+Leituras, alarmes, resumos e relatórios do engenheiro continuam limitados ao
+seu escopo; relatórios salvos legados também são testados.
+
+Os dois scripts podem ser executados separadamente. Para executar todos os
+testes do projeto, use `npm test`.
 
 ## Sintaxe dos arquivos principais
 

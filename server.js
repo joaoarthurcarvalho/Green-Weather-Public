@@ -303,7 +303,8 @@ function propriedadesPorSensor() {
   return mapa;
 }
 function sensoresPermitidos(usuario) {
-  if (usuario.papel === "superadmin") return new Set(sensores.keys());
+  if (usuario.papel === "superadmin" || usuario.papel === "funcionario")
+    return new Set(sensores.keys());
   // Sensores pertencem ao responsável da propriedade à qual estão vinculados.
   const mapa = propriedadesPorSensor();
   return new Set([...mapa].filter(([, propriedade]) => propriedade.responsavel === usuario.id)

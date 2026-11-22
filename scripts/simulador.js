@@ -2,6 +2,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { gerarAnomalia, valores } = require("./simulador-leituras");
 
 const ROOT = path.resolve(__dirname, "..");
 const BASE = process.env.API || "http://localhost:3000";
@@ -11,15 +12,6 @@ if (!chave) {
   catch { console.error("Não achei data/config.json. Ligue o servidor (node server.js) pelo menos uma vez."); process.exit(1); }
 }
 const SENSORES = Array.from({ length: 12 }, (_, i) => `sensor-${String(i + 1).padStart(2, "0")}`);
-const ruido = amp => (Math.random() - 0.5) * 2 * amp;
-
-/* Curva do dia: mais quente à tarde, mais úmido de manhã */
-function valores(ts, indice) {
-  const d = new Date(ts), hora = d.getHours() + d.getMinutes() / 60;
-  const t = 25 + 5 * Math.sin((hora - 9) / 24 * 2 * Math.PI) + (indice - 6) * 0.08 + ruido(0.7);
-  const u = 70 - (t - 25) * 2.4 + ruido(2);
-  return { temperatura: Math.round(t * 10) / 10, umidade: Math.round(Math.min(95, Math.max(30, u))) };
-}
 async function enviar(lote) {
   const r = await fetch(BASE + "/api/leituras", {
     method: "POST", headers: { "Content-Type": "application/json", "x-api-key": chave }, body: JSON.stringify(lote)
@@ -45,9 +37,14 @@ async function aoVivo() {
   const ATIVOS = process.argv[2] === "falha" ? SENSORES.slice(0, 10) : SENSORES;
   const ciclo = async () => {
     const ts = Date.now();
+    const anomalia = gerarAnomalia();
+    const indiceAnomalo = anomalia ? Math.floor(Math.random() * ATIVOS.length) : -1;
     try {
-      const r = await enviar(ATIVOS.map((sensor, i) => ({ sensor, ...valores(ts, i) })));
-      console.log(new Date().toLocaleTimeString(), "→", r.salvas, "leituras enviadas");
+      const r = await enviar(ATIVOS.map((sensor, i) => ({
+        sensor, ...valores(ts, i, i === indiceAnomalo ? anomalia : null)
+      })));
+      const aviso = anomalia ? ` (anomalia ${anomalia} em ${ATIVOS[indiceAnomalo]})` : "";
+      console.log(new Date().toLocaleTimeString(), "→", r.salvas, `leituras enviadas${aviso}`);
     } catch (e) { console.error("Falhou:", e.message); }
   };
   await ciclo(); setInterval(ciclo, 20000);
