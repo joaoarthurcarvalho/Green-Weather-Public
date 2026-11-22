@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Green Weather · Relatórios técnicos</title>
+  <link rel="icon" href="../assets/logo.svg">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/gestao.css">
+  <link rel="stylesheet" href="../css/relatorios.css">
+  <script src="../js/api.js"></script>
+  <script>GW.exigirPapel(["engenheiro", "superadmin"]);</script>
+  <script src="../js/preferencias.js"></script>
+  <script src="../js/relogio.js" defer></script>
+</head>
+<body>
+<header class="header">
+  <div class="brand">
+    <img src="../assets/logo.svg" alt="Logo Green Weather">
+    <div class="brand-text"><small>GREEN</small><strong>Weather</strong></div>
+  </div>
+  <div class="welcome"><div class="welcome-text"><span>Bem-vindo</span><span data-user-name>—</span></div></div>
+  <button type="button" class="theme-toggle" role="switch" aria-checked="false" data-theme-toggle aria-label="Ativar tema escuro" title="Ativar tema escuro">
+    <svg class="theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42 1.42"/></svg>
+    <svg class="theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13z"/></svg>
+  </button>
+  <div class="clock">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>
+    <div class="clock-text"><div class="clock-day" id="dia">—</div><div id="data">—</div><div class="clock-time" id="hora">—</div></div>
+  </div>
+</header>
+<nav class="sidebar" aria-label="Navegação principal">
+  <a href="dashboard.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8v10H3z"/></svg>Início</a>
+  <a href="historico.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Histórico</a>
+  <a href="configuracoes.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>Configurações</a>
+</nav>
+<main class="management technical-page">
+  <h1 class="page-heading">Relatórios técnicos</h1>
+  <p class="management-intro">Gere relatórios técnicos a partir das leituras e alarmes do período selecionado.</p>
+
+  <section class="technical-section">
+    <h2>Relatório técnico</h2>
+    <form class="card report-filter" id="form-relatorio" novalidate>
+      <div class="management-field">
+        <label for="data-inicial">Data inicial</label>
+        <input id="data-inicial" type="date" required>
+      </div>
+      <div class="management-field">
+        <label for="data-final">Data final</label>
+        <input id="data-final" type="date" required>
+      </div>
+      <div class="management-field report-observations">
+        <label for="observacoes">Observações técnicas</label>
+        <textarea id="observacoes" rows="4" maxlength="2000" placeholder="Registre observações relevantes para este relatório."></textarea>
+        <small>As observações serão incluídas no relatório impresso ou salvo em PDF.</small>
+      </div>
+      <div class="management-actions">
+        <button class="btn btn-primary" type="submit" id="gerar-relatorio">Gerar relatório</button>
+        <button class="btn btn-secondary" type="button" id="imprimir-relatorio" disabled>Imprimir / salvar PDF</button>
+        <p class="management-message" id="mensagem-relatorio" role="status" aria-live="polite"></p>
+      </div>
+    </form>
+    <article id="relatorio" class="card report-output" aria-live="polite" hidden></article>
+  </section>
+
+  <section class="technical-section saved-reports-section">
+    <h2>Relatórios salvos</h2>
+    <p class="saved-reports-intro">Os relatórios gerados ficam guardados na sua conta e podem ser abertos para imprimir novamente.</p>
+    <div class="table-wrap saved-reports-table">
+      <table>
+        <thead><tr><th>Gerado em</th><th>Período</th><th>Leituras</th><th>Observações</th><th>Ações</th></tr></thead>
+        <tbody id="lista-relatorios"><tr><td colspan="5" class="empty">Carregando relatórios…</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+<script src="../js/relatorios.js"></script>
+</body>
+</html>

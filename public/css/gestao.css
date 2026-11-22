@@ -1,0 +1,131 @@
+.management{max-width:920px}
+.management-intro{margin:-12px 0 24px;color:var(--muted);font-size:14px}
+.management-tabs{display:flex;gap:8px;margin-bottom:18px;border-bottom:1px solid var(--border)}
+.management-tab{
+  padding:10px 14px;border:0;border-bottom:2px solid transparent;
+  background:transparent;color:var(--muted);font:inherit;font-size:14px;font-weight:650;cursor:pointer;
+}
+.management-tab.active{border-bottom-color:var(--green);color:var(--text)}
+.management-tab:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.daily-password{max-width:560px}
+.daily-password h2{margin-bottom:8px;color:var(--text);font-size:18px}
+.daily-password>p{margin:8px 0;color:var(--muted);font-size:14px}
+.daily-password-date strong{color:var(--text)}
+.daily-password-code{margin:18px 0!important;text-align:center}
+.daily-password-code code{
+  display:inline-block;padding:12px 18px;border:1px solid var(--border);border-radius:10px;
+  background:var(--bg);color:var(--green);font:700 24px "Courier New",monospace;letter-spacing:3px;
+}
+.daily-password .management-tab{border:1px solid var(--border);border-radius:8px}
+.daily-password .management-tab:disabled{opacity:.55;cursor:wait}
+.management-list .properties-table{min-width:1000px}
+.management-config-button{
+  padding:6px 10px;border:1px solid var(--border);border-radius:8px;
+  background:transparent;color:var(--text-soft);font:inherit;font-size:12px;font-weight:650;
+  cursor:pointer;
+}
+.management-config-button:hover{background:rgba(255,255,255,.09)}
+.management-config-button:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.property-config-dialog{
+  width:min(620px,calc(100% - 32px));max-height:90vh;overflow:auto;margin:auto;padding:24px;
+  border:1px solid var(--border);border-radius:16px;background:var(--navy-1);color:var(--text);
+  box-shadow:0 24px 70px rgba(0,0,0,.4);
+}
+.property-config-dialog::backdrop{background:rgba(4,13,24,.62);backdrop-filter:blur(3px)}
+.property-config-dialog h2{margin:0;color:var(--text);font-size:19px}
+.property-config-dialog .management-actions{justify-content:flex-end}
+.property-config-dialog .btn-ghost{
+  background:transparent;color:var(--text-soft);border-color:var(--border);
+}
+.property-config-dialog #config-sensores[hidden]{display:none}
+.property-sensor-label{color:var(--text-soft);font-size:12px;font-weight:650}
+.property-sensor-list{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;
+  max-height:220px;overflow:auto;padding:2px;
+}
+.property-sensor-option{
+  display:flex;align-items:center;gap:8px;min-width:0;padding:9px 10px;
+  border:1px solid var(--border);border-radius:9px;color:var(--text-soft);
+  font-size:12px;cursor:pointer;
+}
+.property-sensor-option input{accent-color:var(--green)}
+.property-sensor-option span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.management-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.management-field{display:flex;flex-direction:column;gap:7px;min-width:0}
+.management-field label{color:var(--text-soft);font-size:12px;font-weight:650}
+.management-field input,.management-field select{
+  min-height:46px;width:100%;padding:10px 12px;border:1px solid var(--border);
+  border-radius:10px;background:var(--bg);color:var(--text);font:inherit;font-size:14px;
+}
+.management-field input:focus,.management-field select:focus{
+  outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(119,214,160,.14);
+}
+.management-field input::placeholder{color:var(--muted)}
+.management-field small{color:var(--muted);font-size:11px}
+.management-full{grid-column:1/-1}
+.management-actions{display:flex;align-items:center;gap:12px;grid-column:1/-1;margin-top:4px}
+.management-actions .btn{
+  min-width:150px;padding:11px 18px;border:1px solid #4388e8;border-radius:10px;
+  font:inherit;font-weight:700;cursor:pointer;transition:background .18s,box-shadow .18s,transform .18s;
+}
+.management-actions .btn-primary{
+  background:#2468c9;color:#fff;box-shadow:0 4px 12px rgba(14,79,165,.28);
+}
+.management-actions .btn-primary:hover{
+  background:#347de0;box-shadow:0 6px 16px rgba(14,79,165,.38);
+}
+.management-actions .btn-primary:active{transform:translateY(1px)}
+.management-actions .btn:disabled{opacity:.62;cursor:wait;box-shadow:none}
+.management-message{min-height:20px;color:var(--muted);font-size:13px}
+.management-message.success{color:var(--green)}
+.management-message.error{color:var(--danger)}
+.management-list{margin-top:28px}
+.management-list h2{margin-bottom:14px;color:var(--text);font-size:17px}
+.management-list .table-wrap{max-height:360px;overflow:auto}
+.management-list table{min-width:820px}
+.management-list thead{position:sticky;top:0;z-index:1}
+.management-list th:last-child,.management-list td:last-child{
+  position:sticky;right:0;min-width:190px;white-space:nowrap;
+}
+.management-list th:last-child{z-index:2}
+.management-list td:last-child{background:var(--navy-1)}
+.management-list tbody tr:hover td:last-child{background:var(--navy-3)}
+.management-list .empty{padding:18px 10px;color:var(--muted);text-align:center}
+.management-list .management-message{margin-bottom:8px}
+.management-status{color:var(--green);font-weight:650}
+.management-status.inactive{color:var(--danger)}
+.management-status-button{
+  margin-right:6px;padding:6px 10px;border:1px solid var(--border);border-radius:8px;
+  background:transparent;color:var(--text-soft);font:inherit;font-size:12px;font-weight:650;
+  cursor:pointer;
+}
+.management-status-button:hover{background:rgba(255,255,255,.09)}
+.management-status-button:disabled{opacity:.55;cursor:wait}
+.management-delete-button{
+  padding:6px 10px;border:1px solid var(--danger);border-radius:8px;
+  background:transparent;color:var(--danger);font:inherit;font-size:12px;font-weight:650;
+  cursor:pointer;
+}
+.management-delete-button:hover{background:rgba(255,107,107,.12)}
+.management-delete-button:disabled{opacity:.55;cursor:wait}
+.management-password{position:relative}
+.management-password input{padding-right:48px}
+.management-password .password-toggle{
+  position:absolute;top:50%;right:6px;display:grid;place-items:center;
+  width:36px;height:36px;transform:translateY(-50%);border:0;border-radius:8px;
+  background:transparent;color:var(--muted);cursor:pointer;
+}
+.management-password .password-toggle:hover{background:rgba(255,255,255,.06);color:var(--text)}
+.management-password .password-toggle svg{width:19px;height:19px}
+html[data-tema="claro"] .management-field input,
+html[data-tema="claro"] .management-field select{
+  background:#fff;border-color:var(--border);color:var(--text);
+}
+html[data-tema="claro"] .management-password .password-toggle:hover{background:rgba(27,54,38,.05)}
+@media(max-width:600px){
+  .management-form{grid-template-columns:1fr}
+  .management-full,.management-actions{grid-column:auto}
+  .management-actions{align-items:stretch;flex-direction:column}
+  .management-actions .btn{width:100%}
+  .management-list .table-wrap{max-height:280px}
+}

@@ -1,0 +1,167 @@
+/* =========================================================
+   Green Weather Login e Cadastro
+   ========================================================= */
+:root{--navy:#0b1d3d;--field:#93cbe6;--btn:#4aa8f0}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  min-height:100vh;display:grid;place-items:center;padding:24px;
+  font-family:"Segoe UI",Roboto,Arial,sans-serif;color:#fff;
+  background:linear-gradient(180deg,#1a3a7c 0%,#6f9bf7 100%) fixed;
+  -webkit-font-smoothing:antialiased;
+}
+.panel{
+  width:min(340px,100%);padding:28px 28px 30px;
+  display:flex;flex-direction:column;gap:16px;
+  background:linear-gradient(180deg,#1f5bd6,#17357a);
+  border:3px solid var(--navy);
+  box-shadow:0 18px 40px rgba(8,25,60,.45);
+  animation:entra .45s cubic-bezier(.2,.7,.2,1);
+}
+@keyframes entra{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* Logo */
+.logo{width:76px;height:76px;object-fit:contain;align-self:center;margin-bottom:-8px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.35))}
+.wordmark{text-align:center;line-height:1;margin-bottom:2px}
+.wordmark small{display:block;font-size:15px;letter-spacing:2px;color:#6fd36b;font-weight:700}
+.wordmark strong{
+  font-size:25px;letter-spacing:1px;
+  background:linear-gradient(90deg,#6b8be0,#e08a3c);-webkit-background-clip:text;background-clip:text;color:transparent;
+}
+
+h1{font-family:"Trebuchet MS","Segoe UI",sans-serif;font-size:26px;font-weight:800;letter-spacing:1px;text-align:center}
+
+/* Campos */
+.panel input{
+  width:100%;padding:12px;border-radius:10px;border:2px solid var(--navy);
+  background:var(--field);color:var(--navy);
+  font:14px "Courier New",ui-monospace,monospace;
+  transition:box-shadow .2s,background .2s;
+}
+.panel input::placeholder{color:#1c2f52;opacity:.8}
+.panel input:focus{outline:none;background:#a6d8ee;box-shadow:0 0 0 3px rgba(124,252,74,.5)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* Botao */
+.btn{
+  margin-top:6px;padding:12px;border-radius:10px;border:3px solid var(--navy);
+  background:var(--btn);color:var(--navy);cursor:pointer;
+  font:700 14px "Courier New",ui-monospace,monospace;
+  transition:transform .15s,background .2s,box-shadow .2s;
+}
+.btn:hover{background:#65b8f6;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.6;cursor:wait}
+
+.erro{min-height:16px;font-size:12px;text-align:center;color:#ffd27a}
+.alt{font-size:12px;text-align:center;color:#cfe0ff}
+.alt a{color:#fff;font-weight:700}
+
+/* Topo do cadastro (seta + título) */
+.topbar{display:grid;grid-template-columns:36px 1fr 36px;align-items:center;margin-bottom:6px}
+.back{color:var(--navy);display:inline-flex;transition:transform .2s}
+.back:hover{transform:translateX(-3px)}
+.back svg{width:30px;height:30px}
+.panel a:focus-visible,.btn:focus-visible{outline:2px solid #7cfc4a;outline-offset:3px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* Autenticação: linguagem visual do painel */
+:root{color-scheme:dark;--navy:#0b1220;--field:#142438;--btn:#31855a}
+body{
+  padding:24px;background:
+    radial-gradient(800px 500px at 15% 10%,rgba(90,160,119,.18),transparent 60%),
+    radial-gradient(700px 500px at 100% 100%,rgba(67,110,153,.16),transparent 58%),
+    #0b1220;color:#edf4f1;line-height:1.5;
+}
+.panel{
+  width:min(420px,100%);gap:18px;padding:36px;
+  background:rgba(17,29,46,.94);border:1px solid #26394d;border-radius:22px;
+  box-shadow:0 24px 70px rgba(0,0,0,.34);backdrop-filter:blur(16px);
+}
+.logo{width:64px;height:64px;margin-bottom:-6px;filter:none}
+.wordmark small{color:#77d6a0;font-size:11px;letter-spacing:2.5px}
+.wordmark strong{
+  background:none;color:#edf4f1;font-size:26px;letter-spacing:-.5px;
+  -webkit-text-fill-color:currentColor;
+}
+.panel h1{
+  color:#edf4f1;font-family:inherit;font-size:25px;letter-spacing:-.5px;
+}
+.topbar h1{font-size:23px}
+.panel input{
+  min-height:48px;padding:12px 14px;border:1px solid #30465a;border-radius:11px;
+  background:#0d1827;color:#edf4f1;font:inherit;font-size:15px;
+}
+.panel input::placeholder{color:#91a39e}
+.panel input:focus{
+  outline:none;background:#0d1827;border-color:#77d6a0;
+  box-shadow:0 0 0 3px rgba(119,214,160,.14);
+}
+.password-field{position:relative;width:100%}
+#credenciais{display:flex;flex-direction:column;gap:18px}
+#campo-senha-do-dia:not([hidden]){display:flex;flex-direction:column;gap:12px}
+#campo-senha-do-dia label{font-size:13px;font-weight:650}
+.password-field input{padding-right:50px}
+.password-toggle{
+  position:absolute;top:50%;right:10px;display:grid;place-items:center;
+  width:36px;height:36px;transform:translateY(-50%);border:0;border-radius:8px;
+  background:transparent;color:#91a39e;cursor:pointer;
+}
+.password-toggle:hover{background:rgba(255,255,255,.06);color:#edf4f1}
+.password-toggle svg{width:19px;height:19px}
+.row{gap:12px}
+.btn{
+  min-height:48px;margin-top:0;padding:12px 16px;border:1px solid #31855a;
+  border-radius:11px;background:#31855a;color:#fff;font:inherit;font-size:14px;font-weight:700;
+}
+.btn:hover{background:#3a9a69;box-shadow:0 8px 20px rgba(49,133,90,.2)}
+.btn:disabled{opacity:.62}
+.erro{min-height:18px;color:#f2bd6d}
+.alt{font-size:13px;color:#aabbb5}
+.alt a{color:#9be2b8;text-underline-offset:3px}
+.alt a:hover{color:#c3f1d3}
+.back{color:#91a39e}
+.panel a:focus-visible,.btn:focus-visible{outline:3px solid #77d6a0;outline-offset:3px}
+@media(max-width:480px){
+  .panel{padding:28px 22px;border-radius:18px}
+  .row{grid-template-columns:1fr}
+}
+
+/* A tela de autenticação permanece clara, independentemente do tema do painel. */
+:root{color-scheme:light}
+body{
+  color:#1b2b24;
+  background:
+    radial-gradient(900px 520px at 90% -10%,rgba(38,132,81,.1),transparent 65%),
+    linear-gradient(160deg,#f8faf9,#edf2ef);
+}
+.panel{
+  background:rgba(255,255,255,.96);
+  border-color:#dce6df;
+  box-shadow:0 24px 70px rgba(27,54,38,.1);
+}
+.wordmark strong,.panel h1{color:#1b2b24}
+.panel input{
+  border-color:#cbd8cf;
+  background:#f7faf8;
+  color:#1b2b24;
+}
+.panel input::placeholder{color:#75877c}
+.panel input:focus{
+  background:#fff;
+  border-color:#268451;
+  box-shadow:0 0 0 3px rgba(38,132,81,.12);
+}
+.password-toggle{color:#75877c}
+.password-toggle:hover{background:rgba(27,54,38,.05);color:#1b2b24}
+.btn{
+  border-color:#31855a;
+  background:#31855a;
+  color:#fff;
+}
+.btn:hover{background:#3a9a69;box-shadow:0 8px 20px rgba(49,133,90,.18)}
+.erro{color:#a96b17}
+.alt{color:#75877c}
+.alt a{color:#216c43}
+.alt a:hover{color:#1a9650}
+.panel button.alt{border:0;background:transparent;color:#216c43;cursor:pointer;text-decoration:underline}
+.panel a:focus-visible,.btn:focus-visible{outline-color:#268451}

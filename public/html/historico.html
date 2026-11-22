@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Green Weather · Histórico</title>
+<link rel="icon" href="../assets/logo.svg">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/historico.css">
+<script src="../js/api.js"></script>
+<script>GW.exigirLogin();</script>
+<script src="../js/preferencias.js"></script>
+</head>
+<body>
+
+<header class="header">
+  <div class="brand">
+    <img src="../assets/logo.svg" alt="Logo Green Weather">
+    <div class="brand-text"><small>GREEN</small><strong>Weather</strong></div>
+  </div>
+  <div class="welcome"><div class="welcome-text"><span>Bem-vindo</span><span data-user-name>—</span></div></div>
+  <button type="button" class="theme-toggle" role="switch" aria-checked="false" data-theme-toggle aria-label="Ativar tema escuro" title="Ativar tema escuro">
+    <svg class="theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>
+    <svg class="theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13z"/></svg>
+  </button>
+  <div class="clock">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>
+    <div class="clock-text">
+      <div class="clock-day" id="dia">—</div>
+      <div id="data">—</div>
+      <div class="clock-time" id="hora">—</div>
+    </div>
+  </div>
+</header>
+
+<nav class="sidebar" aria-label="Navegação principal">
+  <a href="dashboard.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8v10H3z"/></svg>Início
+  </a>
+  <a href="historico.html" class="active" aria-current="page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Histórico
+  </a>
+  <a href="configuracoes.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>Configurações
+  </a>
+</nav>
+
+<main>
+  <h1 class="page-heading">Histórico</h1>
+
+  <form class="card filter" id="filtro" novalidate>
+    <div class="filter-info">
+      <h2>Filtrar por data</h2>
+      <p>Selecione o intervalo para consultar as leituras.</p>
+    </div>
+    <div class="field">
+      <label for="ini">Data inicial</label>
+      <input type="date" id="ini">
+    </div>
+    <div class="field">
+      <label for="fim">Data final</label>
+      <input type="date" id="fim">
+    </div>
+    <button type="submit" class="btn btn-primary">Aplicar filtros</button>
+    <button type="button" class="btn btn-ghost" id="limpar">Limpar</button>
+    <div class="filter-error" id="erro" role="alert"></div>
+  </form>
+
+  <section class="stats historico-resumo">
+    <article class="card">
+      <h3 class="card-title">Temperatura máxima</h3>
+      <div class="stat-row">
+        <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M14 14.8V5a2 2 0 10-4 0v9.8a4 4 0 104 0z"/></svg>
+        <div><div class="stat-value" id="tmax">—</div><div class="stat-range" id="tmax-quando">—</div></div>
+      </div>
+    </article>
+    <article class="card">
+      <h3 class="card-title">Umidade máxima</h3>
+      <div class="stat-row">
+        <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3s6 6.5 6 11a6 6 0 11-12 0c0-4.5 6-11 6-11z"/></svg>
+        <div><div class="stat-value" id="umax">—</div><div class="stat-range" id="umax-quando">—</div></div>
+      </div>
+    </article>
+    <article class="card">
+      <h3 class="card-title">Período selecionado</h3>
+      <div class="stat-row">
+        <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        <div><div class="stat-value period-value" id="periodo">—</div><div class="stat-range" id="periodo-info">—</div></div>
+      </div>
+    </article>
+  </section>
+
+  <section class="card">
+    <div class="table-head">
+      <h2>Últimas leituras</h2>
+      <span id="contagem">—</span>
+    </div>
+    <div class="table-wrap historico-scroll" tabindex="0" aria-label="Histórico de leituras; use a rolagem para ver todos os registros">
+      <table>
+        <thead><tr><th>Data</th><th>Horário</th><th>Sensor</th><th>Propriedade</th><th>Temperatura (°C)</th><th>Umidade (%)</th><th>Status do sensor</th></tr></thead>
+        <tbody id="tabela"></tbody>
+      </table>
+    </div>
+    <div class="table-foot"><span id="rodape">—</span><span>Leituras por sensor agregadas em intervalos de 30 minutos</span></div>
+  </section>
+
+  <section class="card climate-limits" id="secao-limites-climaticos" data-recurso="limites-climaticos" hidden>
+    <h2>Limites climáticos</h2>
+    <p>Defina a faixa ambiental usada para classificar as condições e gerar alarmes.</p>
+    <form class="climate-form" id="form-limites" novalidate>
+      <div class="field">
+        <label for="temperatura-minima">Temperatura mínima (°C)</label>
+        <input id="temperatura-minima" name="temperaturaMinima" type="number" min="-50" max="100" step="0.1" required>
+      </div>
+      <div class="field">
+        <label for="temperatura-maxima">Temperatura máxima (°C)</label>
+        <input id="temperatura-maxima" name="temperaturaMaxima" type="number" min="-50" max="100" step="0.1" required>
+      </div>
+      <div class="field">
+        <label for="umidade-minima">Umidade mínima (%)</label>
+        <input id="umidade-minima" name="umidadeMinima" type="number" min="0" max="100" step="0.1" required>
+      </div>
+      <div class="field">
+        <label for="umidade-maxima">Umidade máxima (%)</label>
+        <input id="umidade-maxima" name="umidadeMaxima" type="number" min="0" max="100" step="0.1" required>
+      </div>
+      <div class="climate-actions">
+        <button class="btn btn-primary" type="submit" id="salvar-limites">Salvar limites</button>
+        <p class="management-message" id="mensagem-limites" role="status" aria-live="polite"></p>
+      </div>
+    </form>
+  </section>
+</main>
+
+<script>
+/* ====== DADOS DE EXEMPLO ======
+   data no formato AAAA-MM-DD, horario HH:MM */
+const leituras = [
+  ["2026-10-10","15:30",26.4,68],["2026-10-10","15:00",26.1,67],["2026-10-10","14:30",27.2,65],
+  ["2026-10-10","14:00",28.6,63],["2026-10-10","13:30",24.3,72],["2026-10-10","13:00",21.8,78],
+  ["2026-10-10","12:30",25.6,78],["2026-10-10","12:00",31.8,58],["2026-10-10","11:30",29.4,61],
+  ["2026-10-10","11:00",22.1,79],["2026-10-10","10:30",24.8,73],["2026-10-10","10:00",28.9,64],
+  ["2026-10-10","09:30",23.5,76],["2026-10-10","09:00",20.7,82]
+].map(([data,hora,t,u]) => ({data,hora,t,u,online:true}));
+
+/* ====== Relógio ====== */
+const nomesDias = ["Domingo","Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado"];
+function atualizaRelogio(){
+  const d = new Date(), p = n => String(n).padStart(2,"0");
+  document.getElementById("dia").textContent  = nomesDias[d.getDay()];
+  document.getElementById("data").textContent = `${p(d.getDate())}/${p(d.getMonth()+1)}/${d.getFullYear()}`;
+  document.getElementById("hora").textContent = `${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+atualizaRelogio(); setInterval(atualizaRelogio, 1000);
+
+/* ====== Utilitários ====== */
+const $ = id => document.getElementById(id);
+const meses = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+const dataISO = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+function definirUltimosSeteDias(){
+  const fim = new Date();
+  const inicio = new Date(fim);
+  inicio.setDate(inicio.getDate() - 6);
+  $("ini").value = dataISO(inicio);
+  $("fim").value = dataISO(fim);
+}
+definirUltimosSeteDias();
+const br = iso => iso.split("-").reverse().join("/");
+const num = (v,c=1) => v.toFixed(c).replace(".",",");
+const dia = iso => iso.slice(8,10);
+
+function textoPeriodo(a,b){
+  if (a === b) return `${dia(a)} de ${meses[+a.slice(5,7)-1]}`;
+  if (a.slice(0,7) === b.slice(0,7)) return `${dia(a)} a ${dia(b)} de ${meses[+a.slice(5,7)-1]}`;
+  return `${dia(a)}/${a.slice(5,7)} a ${dia(b)}/${b.slice(5,7)}`;
+}
+function diasNoPeriodo(a,b){ return Math.round((new Date(b)-new Date(a))/86400000) + 1; }
+
+/* ====== Renderização ====== */
+function render(ini, fim){
+  const lista = leituras
+    .filter(r => r.data >= ini && r.data <= fim)
+    .sort((x,y) => (y.data+y.hora).localeCompare(x.data+x.hora));
+
+  $("periodo").textContent = textoPeriodo(ini,fim);
+  const dias = diasNoPeriodo(ini,fim);
+  $("periodo-info").textContent = `${lista.length} leituras • ${dias} ${dias === 1 ? "dia" : "dias"}`;
+  $("contagem").textContent = `${lista.length} registros • Mais recentes primeiro ↓`;
+
+  if (!lista.length){
+    $("tmax").textContent = $("umax").textContent = "—";
+    $("tmax-quando").textContent = $("umax-quando").textContent = "Sem leituras no período";
+    $("tabela").innerHTML = `<tr><td colspan="7" class="empty">Nenhuma leitura encontrada para o período selecionado.</td></tr>`;
+    $("rodape").textContent = "Exibindo 0 leituras";
+    return;
+  }
+
+  const mT = lista.reduce((a,b) => b.t > a.t ? b : a);
+  const mU = lista.reduce((a,b) => b.u > a.u ? b : a);
+  $("tmax").textContent = num(mT.t) + " °C";
+  $("tmax-quando").textContent = `${br(mT.data)} às ${mT.hora}`;
+  $("umax").textContent = mU.u + " %";
+  $("umax-quando").textContent = `${br(mU.data)} às ${mU.hora}`;
+
+  const escapar = valor => String(valor).replace(/[&<>"']/g, caractere =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[caractere]);
+  $("tabela").innerHTML = lista.map(r => {
+    const max = r === mT || r === mU;
+    return `<tr class="${max ? "is-max" : ""}">
+      <td>${br(r.data)}</td><td>${r.hora}</td><td>${escapar(r.sensor || "—")}</td>
+      <td>${escapar(r.propriedade || "Não vinculada")}</td>
+      <td>${num(r.t)} °C${r === mT ? '<span class="tag-max">Máxima</span>' : ""}</td>
+      <td>${r.u} %${r === mU ? '<span class="tag-max">Máxima</span>' : ""}</td>
+      <td><span class="badge ${r.online ? "" : "off"}">${r.online ? "Online" : "Offline"}</span></td></tr>`;
+  }).join("");
+  $("rodape").textContent = `Exibindo todas as ${lista.length} leituras do período`;
+}
+
+/* ====== Filtro ====== */
+$("filtro").addEventListener("submit", e => {
+  e.preventDefault();
+  const ini = $("ini").value, fim = $("fim").value;
+  if (!ini || !fim){ $("erro").textContent = "Informe a data inicial e a data final."; return; }
+  if (ini > fim){ $("erro").textContent = "A data inicial não pode ser maior que a data final."; return; }
+  $("erro").textContent = "";
+  render(ini, fim);
+});
+$("limpar").addEventListener("click", () => {
+  definirUltimosSeteDias(); $("erro").textContent = "";
+  render($("ini").value, $("fim").value);
+});
+
+render($("ini").value, $("fim").value);
+</script>
+<script src="../js/vistas-historico.js"></script>
+<script src="../js/alarmes-historico.js"></script>
+<script src="../js/historico-api.js"></script>
+<script src="../js/limites-climaticos.js"></script>
+</body>
+</html>

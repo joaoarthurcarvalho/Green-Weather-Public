@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Green Weather · Configurações</title>
+<link rel="icon" href="../assets/logo.svg">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/configuracoes.css">
+<script src="../js/api.js"></script>
+<script>GW.exigirLogin();</script>
+<script src="../js/preferencias.js"></script>
+</head>
+<body>
+
+<header class="header">
+  <div class="brand">
+    <img src="../assets/logo.svg" alt="Logo Green Weather">
+    <div class="brand-text"><small>GREEN</small><strong>Weather</strong></div>
+  </div>
+  <div class="welcome"><div class="welcome-text"><span>Bem-vindo</span><span data-user-name>—</span></div></div>
+  <button type="button" class="theme-toggle" role="switch" aria-checked="false" data-theme-toggle aria-label="Ativar tema escuro" title="Ativar tema escuro">
+    <svg class="theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>
+    <svg class="theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13z"/></svg>
+  </button>
+  <div class="clock">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>
+    <div class="clock-text">
+      <div class="clock-day" id="dia">—</div>
+      <div id="data">—</div>
+      <div class="clock-time" id="hora">—</div>
+    </div>
+  </div>
+</header>
+
+<nav class="sidebar" aria-label="Navegação principal">
+  <a href="dashboard.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8v10H3z"/></svg>Início
+  </a>
+  <a href="historico.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Histórico
+  </a>
+  <a href="configuracoes.html" class="active" aria-current="page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>Configurações
+  </a>
+
+</nav>
+
+<main class="cfg">
+  <h1 class="page-heading">Configurações</h1>
+
+  <h2 class="cfg-titulo">Aparência</h2>
+  <section class="card cfg-card">
+    <div class="cfg-linha">
+      <div><strong>Usar Gráficos</strong><small>Visualização de dados em tempo real</small></div>
+      <button type="button" class="switch" role="switch" id="sw-graficos" aria-label="Usar gráficos" aria-checked="true"></button>
+    </div>
+  </section>
+
+  <h2 class="cfg-titulo">Notificações</h2>
+  <section class="card cfg-card">
+    <div class="cfg-linha">
+      <div><strong>Alarmes</strong><small>Receba alertas críticos</small></div>
+      <button type="button" class="switch" role="switch" id="sw-alarmes" aria-label="Alarmes" aria-checked="true"></button>
+    </div>
+  </section>
+
+  <h2 class="cfg-titulo">Configurações da Conta</h2>
+  <section class="card cfg-card">
+    <button type="button" class="cfg-acao" data-abrir="dlg-senha">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
+      Atualizar senha
+      <svg class="seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+    </button>
+    <button type="button" class="cfg-acao" id="outros">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>
+      Desconectar outros dispositivos
+      <svg class="seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+    </button>
+    <button type="button" class="cfg-acao" data-abrir="dlg-email">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+      Atualizar e-mail
+      <svg class="seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+    </button>
+  </section>
+
+</main>
+
+<!-- Atualizar senha -->
+<dialog id="dlg-senha" aria-labelledby="t-senha">
+  <form id="form-senha" novalidate>
+    <h3 id="t-senha">Atualizar senha</h3>
+    <div class="dlg-campos">
+      <input type="password" id="s-atual" placeholder="Senha atual" aria-label="Senha atual" autocomplete="current-password">
+      <input type="password" id="s-nova" placeholder="Nova senha" aria-label="Nova senha" autocomplete="new-password">
+      <input type="password" id="s-conf" placeholder="Confirmar nova senha" aria-label="Confirmar nova senha" autocomplete="new-password">
+    </div>
+    <p class="erro" role="alert"></p>
+    <div class="dlg-botoes">
+      <button type="button" class="dlg-cancelar" data-fechar>Cancelar</button>
+      <button type="submit" class="dlg-ok">Salvar</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Atualizar e-mail -->
+<dialog id="dlg-email" aria-labelledby="t-email">
+  <form id="form-email" novalidate>
+    <h3 id="t-email">Atualizar e-mail</h3>
+    <div class="dlg-campos">
+      <input type="email" id="e-novo" placeholder="Novo e-mail" aria-label="Novo e-mail" autocomplete="email">
+      <input type="password" id="e-senha" placeholder="Sua senha" aria-label="Sua senha" autocomplete="current-password">
+    </div>
+    <p class="erro" role="alert"></p>
+    <div class="dlg-botoes">
+      <button type="button" class="dlg-cancelar" data-fechar>Cancelar</button>
+      <button type="submit" class="dlg-ok">Salvar</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const prefs = GWPrefs.ler();
+
+/* ===== Relógio ===== */
+const nomesDias = ["Domingo","Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado"];
+function atualizaRelogio(){
+  const d = new Date(), p = n => String(n).padStart(2,"0");
+  $("dia").textContent  = nomesDias[d.getDay()];
+  $("data").textContent = `${p(d.getDate())}/${p(d.getMonth()+1)}/${d.getFullYear()}`;
+  $("hora").textContent = `${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+atualizaRelogio(); setInterval(atualizaRelogio, 1000);
+
+/* ===== Aviso rápido ===== */
+let tToast;
+function toast(msg){
+  const t = $("toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(tToast); tToast = setTimeout(() => t.classList.remove("show"), 2600);
+}
+
+/* ===== Interruptores ===== */
+function ligaSwitch(id, chave, msgLigado, msgDesligado){
+  const el = $(id);
+  el.setAttribute("aria-checked", String(prefs[chave]));
+  el.addEventListener("click", () => {
+    const v = el.getAttribute("aria-checked") !== "true";
+    el.setAttribute("aria-checked", String(v));
+    GWPrefs.definir(chave, v);
+    toast(v ? msgLigado : msgDesligado);
+  });
+}
+ligaSwitch("sw-graficos", "graficos", "Gráficos ativados.", "Gráficos desativados.");
+ligaSwitch("sw-alarmes",  "alarmes",  "Alarmes ativados.",  "Alarmes desativados.");
+
+/* ===== Janelas ===== */
+document.querySelectorAll("[data-abrir]").forEach(b => b.addEventListener("click", () => {
+  const d = $(b.dataset.abrir);
+  d.querySelector("form").reset(); d.querySelector(".erro").textContent = "";
+  d.showModal();
+}));
+document.querySelectorAll("[data-fechar]").forEach(b => b.addEventListener("click", () => b.closest("dialog").close()));
+
+$("form-senha").addEventListener("submit", async e => {
+  e.preventDefault();
+  const erro = e.target.querySelector(".erro"), atual = $("s-atual").value, nova = $("s-nova").value;
+  if (!atual || !nova)           return erro.textContent = "Preencha todos os campos.";
+  if (nova.length < 6)           return erro.textContent = "A nova senha precisa ter pelo menos 6 caracteres.";
+  if (nova !== $("s-conf").value) return erro.textContent = "As senhas não coincidem.";
+  try { await GW.atualizarSenha(atual, nova); $("dlg-senha").close(); toast("Senha atualizada."); }
+  catch (err){ erro.textContent = err.message; }
+});
+
+$("form-email").addEventListener("submit", async e => {
+  e.preventDefault();
+  const erro = e.target.querySelector(".erro"), novo = $("e-novo").value, senha = $("e-senha").value;
+  if (!/^\S+@\S+\.\S+$/.test(novo.trim())) return erro.textContent = "Digite um e-mail válido.";
+  if (!senha)                               return erro.textContent = "Digite sua senha para confirmar.";
+  try { await GW.atualizarEmail(senha, novo); $("dlg-email").close(); toast("E-mail atualizado."); }
+  catch (err){ erro.textContent = err.message; }
+});
+
+/* ===== Outros dispositivos / Sair ===== */
+$("outros").addEventListener("click", async () => {
+  try {
+    const n = await GW.desconectarOutros();
+    toast(n ? `${n} dispositivo(s) desconectado(s).` : "Nenhum outro dispositivo conectado.");
+  } catch (e) { toast(e.message); }
+});
+</script>
+</body>
+</html>

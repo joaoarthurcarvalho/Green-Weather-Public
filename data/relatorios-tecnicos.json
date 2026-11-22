@@ -1,0 +1,112 @@
+[
+  {
+    "id": "ce21ea92-f5aa-49ac-890b-64783270e762",
+    "usuarioId": "24535954-9655-42e5-a419-a4d76f46fca8",
+    "inicio": "2026-11-14",
+    "fim": "2026-11-20",
+    "geradoEm": "2026-11-21T00:14:40.640Z",
+    "limites": {
+      "temperaturaMinima": 20,
+      "temperaturaMaxima": 30,
+      "umidadeMinima": 50,
+      "umidadeMaxima": 80
+    },
+    "resumo": {
+      "leituras": 11172,
+      "sensores": 12,
+      "temperaturaMedia": 27.6,
+      "umidadeMedia": 63.7,
+      "leiturasForaTemperatura": 420,
+      "leiturasForaUmidade": 14,
+      "temperaturaMinima": {
+        "valor": 20.5,
+        "sensor": "sensor-01",
+        "data": "2026-11-14",
+        "hora": "23:49"
+      },
+      "temperaturaMaxima": {
+        "valor": 30.8,
+        "sensor": "sensor-12",
+        "data": "2026-11-20",
+        "hora": "16:04"
+      },
+      "umidadeMinima": {
+        "valor": 55,
+        "sensor": "sensor-10",
+        "data": "2026-11-20",
+        "hora": "16:01"
+      },
+      "umidadeMaxima": {
+        "valor": 82,
+        "sensor": "sensor-03",
+        "data": "2026-11-14",
+        "hora": "23:48"
+      }
+    },
+    "alarmes": {
+      "total": 258,
+      "ativos": 0,
+      "porTipo": {
+        "umidade_alta": 8,
+        "sensor_offline": 48,
+        "temperatura_alta": 202
+      }
+    },
+    "observacoes": "Relatorio de teste"
+  },
+  {
+    "id": "4db2023e-71ff-4301-98fd-e5e8d3dd76a8",
+    "usuarioId": "24535954-9655-42e5-a419-a4d76f46fca8",
+    "inicio": "2026-11-14",
+    "fim": "2026-11-20",
+    "geradoEm": "2026-11-21T00:15:44.033Z",
+    "limites": {
+      "temperaturaMinima": 20,
+      "temperaturaMaxima": 30,
+      "umidadeMinima": 50,
+      "umidadeMaxima": 80
+    },
+    "resumo": {
+      "leituras": 11208,
+      "sensores": 12,
+      "temperaturaMedia": 27.6,
+      "umidadeMedia": 63.7,
+      "leiturasForaTemperatura": 420,
+      "leiturasForaUmidade": 14,
+      "temperaturaMinima": {
+        "valor": 20.5,
+        "sensor": "sensor-01",
+        "data": "2026-11-14",
+        "hora": "23:49"
+      },
+      "temperaturaMaxima": {
+        "valor": 30.8,
+        "sensor": "sensor-12",
+        "data": "2026-11-20",
+        "hora": "16:04"
+      },
+      "umidadeMinima": {
+        "valor": 55,
+        "sensor": "sensor-10",
+        "data": "2026-11-20",
+        "hora": "16:01"
+      },
+      "umidadeMaxima": {
+        "valor": 82,
+        "sensor": "sensor-03",
+        "data": "2026-11-14",
+        "hora": "23:48"
+      }
+    },
+    "alarmes": {
+      "total": 258,
+      "ativos": 0,
+      "porTipo": {
+        "umidade_alta": 8,
+        "sensor_offline": 48,
+        "temperatura_alta": 202
+      }
+    },
+    "observacoes": "Relatorio de teste 2"
+  }
+]

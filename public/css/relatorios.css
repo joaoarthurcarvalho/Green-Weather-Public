@@ -1,0 +1,64 @@
+.technical-page{max-width:920px}
+.technical-page .page-heading{font-size:28px;color:var(--text);margin-bottom:20px;letter-spacing:-.7px}
+.technical-section{margin-top:24px}
+.technical-section h2{margin-bottom:12px;color:var(--green);font-size:17px}
+.technical-section .management-form{padding:20px}
+.report-filter{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.report-filter .management-actions{align-items:center}
+.report-observations{grid-column:1/-1}
+.report-observations textarea{
+  min-height:110px;width:100%;padding:11px 12px;border:1px solid var(--border);
+  border-radius:10px;background:var(--bg);color:var(--text);font:inherit;font-size:14px;
+  resize:vertical;
+}
+.report-observations textarea:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(119,214,160,.14)}
+.report-observations small{color:var(--muted);font-size:11px}
+.report-observation-text{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55}
+.report-close{
+  display:block;margin:18px 0 0 auto;padding:8px 14px;border:1px solid var(--border);
+  border-radius:9px;background:transparent;color:var(--text-soft);font:inherit;
+  font-size:13px;font-weight:650;cursor:pointer;
+}
+.report-close:hover{background:rgba(255,255,255,.08)}
+.management-actions .btn-secondary{
+  min-width:150px;padding:11px 18px;border:1px solid var(--border);border-radius:10px;
+  background:transparent;color:var(--text-soft);font:inherit;font-weight:700;cursor:pointer;
+}
+.management-actions .btn-secondary:hover:not(:disabled){background:rgba(255,255,255,.08)}
+.management-actions .btn-secondary:disabled{opacity:.5;cursor:not-allowed}
+.report-output{margin-top:18px;padding:24px}
+.report-output h2{margin:0 0 6px;font-size:21px;color:var(--text)}
+.report-meta{margin-bottom:18px;color:var(--muted);font-size:12px}
+.report-output h3{margin:20px 0 8px;color:var(--green);font-size:14px}
+.report-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:10px}
+.report-item{padding:12px;border:1px solid var(--border);border-radius:10px;background:rgba(255,255,255,.035)}
+.report-item strong,.report-item span{display:block}
+.report-item strong{margin-bottom:4px;color:var(--muted);font-size:11px}
+.report-item span{font-size:16px;font-weight:700}
+.report-note{margin-top:18px;color:var(--muted);font-size:11px}
+.saved-reports-section{margin-top:28px}
+.saved-reports-intro{margin:-4px 0 12px;color:var(--muted);font-size:13px}
+.saved-reports-table{max-height:360px;overflow:auto}
+.saved-reports-table table{min-width:680px}
+.saved-reports-table th{position:sticky;top:0;z-index:1}
+.saved-report-open{
+  padding:6px 12px;border:1px solid var(--border);border-radius:8px;
+  background:transparent;color:var(--text-soft);font:inherit;font-weight:650;cursor:pointer;
+}
+.saved-report-open:hover{background:rgba(255,255,255,.08)}
+@media(max-width:600px){
+  .report-filter{grid-template-columns:1fr}
+  .report-filter .management-actions{align-items:stretch}
+}
+@media print{
+  body{display:block;min-height:0;background:#fff;color:#111;font-family:Arial,sans-serif}
+  .header,.sidebar,.technical-page>.page-heading,.technical-page>.management-intro,
+  .technical-section,.report-filter{display:none!important}
+  main.technical-page{display:block;max-width:none;padding:0;overflow:visible}
+  .technical-section:has(#relatorio:not([hidden])){display:block!important}
+  .report-output{display:block!important;margin:0;padding:0;border:0;background:#fff;color:#111;box-shadow:none}
+  .report-close{display:none!important}
+  .report-output h2,.report-output h3,.report-item span{color:#111}
+  .report-meta,.report-item strong,.report-note{color:#444}
+  .report-item{border-color:#bbb;background:#fff;break-inside:avoid}
+}
