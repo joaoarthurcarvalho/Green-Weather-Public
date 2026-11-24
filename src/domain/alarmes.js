@@ -3,17 +3,24 @@ const fs = require("node:fs");
 const path = require("node:path");
 const crypto = require("node:crypto");
 
-module.exports = function criarAlarmes({ dir, partes }) {
+module.exports = function criarAlarmes({ dir, partes, limitesParaSensor = () => null }) {
   const ARQ_LIMITES = path.join(dir, "limites-climaticos.json");
+  const ARQ_LIMITES_PROPRIEDADES = path.join(dir, "limites-propriedades.json");
   const PADRAO = { temperaturaMinima: 20, temperaturaMaxima: 30, umidadeMinima: 50, umidadeMaxima: 80 };
   let limites = { ...PADRAO };
   if (fs.existsSync(ARQ_LIMITES)) {
     limites = { ...PADRAO, ...JSON.parse(fs.readFileSync(ARQ_LIMITES, "utf8")) };
     validarLimites(limites);
   }
+  let limitesPorPropriedade = {};
+  if (fs.existsSync(ARQ_LIMITES_PROPRIEDADES)) {
+    limitesPorPropriedade = JSON.parse(fs.readFileSync(ARQ_LIMITES_PROPRIEDADES, "utf8"));
+    if (!limitesPorPropriedade || typeof limitesPorPropriedade !== "object" ||
+        Array.isArray(limitesPorPropriedade))
+      throw new Error("Limites climáticos por propriedade inválidos.");
+    for (const valor of Object.values(limitesPorPropriedade)) validarLimites(valor);
+  }
   const LIM = {
-    tMin: limites.temperaturaMinima, tMax: limites.temperaturaMaxima,
-    uMin: limites.umidadeMinima, uMax: limites.umidadeMaxima,
     histT: 0.5, histU: 2,        // margem para encerrar o alarme (evita abrir/fechar sem parar na borda)
     offlineMs: (Number(process.env.ALARME_OFFLINE_MIN) || 15) * 60 * 1000
   };
@@ -41,10 +48,35 @@ module.exports = function criarAlarmes({ dir, partes }) {
     fs.writeFileSync(tmp, JSON.stringify(novos, null, 2));
     fs.renameSync(tmp, ARQ_LIMITES);
     limites = { ...novos };
-    LIM.tMin = novos.temperaturaMinima;
-    LIM.tMax = novos.temperaturaMaxima;
-    LIM.uMin = novos.umidadeMinima;
-    LIM.uMax = novos.umidadeMaxima;
+  }
+
+  function salvarLimitesPorPropriedade(novos) {
+    const tmp = ARQ_LIMITES_PROPRIEDADES + ".tmp";
+    fs.writeFileSync(tmp, JSON.stringify(novos, null, 2));
+    fs.renameSync(tmp, ARQ_LIMITES_PROPRIEDADES);
+    limitesPorPropriedade = novos;
+  }
+
+  function configurarLimitesPropriedade(id, novos) {
+    if (typeof id !== "string" || !id) throw new Error("Informe uma propriedade válida.");
+    validarLimites(novos);
+    salvarLimitesPorPropriedade({ ...limitesPorPropriedade, [id]: { ...novos } });
+  }
+
+  function removerLimitesPropriedade(id) {
+    if (typeof id !== "string" || !id) throw new Error("Informe uma propriedade válida.");
+    if (!Object.hasOwn(limitesPorPropriedade, id)) return;
+    const novos = { ...limitesPorPropriedade };
+    delete novos[id];
+    salvarLimitesPorPropriedade(novos);
+  }
+
+  function obterLimitesPropriedade(id) {
+    return { ...(limitesPorPropriedade[id] || limites) };
+  }
+
+  function temLimitesPropriedade(id) {
+    return Object.hasOwn(limitesPorPropriedade, id);
   }
 
   /* ---- armazenamento (arquivo JSON, gravado de forma atômica) ---- */
@@ -80,11 +112,17 @@ module.exports = function criarAlarmes({ dir, partes }) {
     if (v > max) {
       if (aBaixa) fechar(kBaixa, sensor, ts);
       if (!aAlta) abrir(kAlta, sensor, ts, v, max);
-      else if (v > aAlta.pico) { aAlta.pico = v; sujo = true; }
+      else {
+        if (v > aAlta.pico) { aAlta.pico = v; sujo = true; }
+        if (aAlta.limite !== max) { aAlta.limite = max; sujo = true; }
+      }
     } else if (v < min) {
       if (aAlta) fechar(kAlta, sensor, ts);
       if (!aBaixa) abrir(kBaixa, sensor, ts, v, min);
-      else if (v < aBaixa.pico) { aBaixa.pico = v; sujo = true; }
+      else {
+        if (v < aBaixa.pico) { aBaixa.pico = v; sujo = true; }
+        if (aBaixa.limite !== min) { aBaixa.limite = min; sujo = true; }
+      }
     } else {
       if (aAlta && v <= max - hist) fechar(kAlta, sensor, ts);
       if (aBaixa && v >= min + hist) fechar(kBaixa, sensor, ts);
@@ -96,9 +134,10 @@ module.exports = function criarAlarmes({ dir, partes }) {
     for (const l of [...leituras].sort((a, b) => a.ts - b.ts)) {
       if (l.ts <= (ultimoTs.get(l.s) || 0)) continue;      // ignora leituras mais antigas que a última avaliada
       ultimoTs.set(l.s, l.ts);
+      const faixa = limitesParaSensor(l.s) || limites;
       fechar("sensor_offline", l.s, l.ts);                  // voltou a enviar → encerra o alarme de offline
-      avalia(l.s, l.ts, l.t, "temperatura", LIM.tMin, LIM.tMax, LIM.histT);
-      avalia(l.s, l.ts, l.u, "umidade", LIM.uMin, LIM.uMax, LIM.histU);
+      avalia(l.s, l.ts, l.t, "temperatura", faixa.temperaturaMinima, faixa.temperaturaMaxima, LIM.histT);
+      avalia(l.s, l.ts, l.u, "umidade", faixa.umidadeMinima, faixa.umidadeMaxima, LIM.histU);
     }
     salvar();
   }
@@ -156,6 +195,10 @@ module.exports = function criarAlarmes({ dir, partes }) {
   return {
     processar, verificarSensores, consultar,
     obterLimites: () => ({ ...limites }),
-    configurarLimites
+    configurarLimites,
+    configurarLimitesPropriedade,
+    removerLimitesPropriedade,
+    obterLimitesPropriedade,
+    temLimitesPropriedade
   };
 };

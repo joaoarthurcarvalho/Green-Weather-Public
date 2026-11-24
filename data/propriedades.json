@@ -21,6 +21,10 @@
       "sensor-10",
       "sensor-11",
       "sensor-12"
+    ],
+    "usuariosAtribuidos": [
+      "24535954-9655-42e5-a419-a4d76f46fca8",
+      "e0122184-a931-4303-b295-8752c6f01724"
     ]
   },
   {
@@ -30,6 +34,9 @@
     "uf": "PE",
     "areaHa": 16,
     "responsavel": "e962ec4f-473d-44d3-8bea-073d6a841188",
-    "criadaEm": "2026-11-22T18:05:01.229Z"
+    "criadaEm": "2026-11-22T18:05:01.229Z",
+    "usuariosAtribuidos": [
+      "e962ec4f-473d-44d3-8bea-073d6a841188"
+    ]
   }
 ]

@@ -13,6 +13,13 @@ const codigoSenhaDoDia = document.getElementById("codigo-senha-do-dia");
 const dataSenhaDoDia = document.getElementById("data-senha-do-dia");
 const mensagemSenhaDoDia = document.getElementById("mensagem-senha-do-dia");
 const botaoAtualizarSenhaDoDia = document.getElementById("atualizar-senha-do-dia");
+const dialogAtribuicao = document.getElementById("dialog-atribuicao-propriedades");
+const formAtribuicao = document.getElementById("form-atribuicao-propriedades");
+const listaAtribuicao = document.getElementById("lista-propriedades-atribuicao");
+const mensagemAtribuicao = document.getElementById("mensagem-atribuicao-propriedades");
+const botaoSalvarAtribuicao = document.getElementById("salvar-atribuicao-propriedades");
+let propriedadesDisponiveis = [];
+let funcionarioEmAtribuicao = null;
 
 function mostrarMensagem(texto, tipo = "") {
   mensagemFuncionario.textContent = texto;
@@ -21,6 +28,8 @@ function mostrarMensagem(texto, tipo = "") {
 
 async function carregarFuncionarios() {
   const { funcionarios } = await GW.requisitar("GET", "/api/funcionarios");
+  const { propriedades } = await GW.requisitar("GET", "/api/propriedades");
+  propriedadesDisponiveis = propriedades;
   listaFuncionarios.replaceChildren();
   for (const funcionario of funcionarios) {
     const linha = document.createElement("tr");
@@ -63,6 +72,17 @@ async function carregarFuncionarios() {
       botaoExcluir.setAttribute("aria-label", `Excluir conta de ${funcionario.nome} ${funcionario.sobrenome}`);
       botaoExcluir.addEventListener("click", () => excluirFuncionario(funcionario, botaoExcluir));
       acoes.appendChild(botaoExcluir);
+
+      const botaoAtribuir = document.createElement("button");
+      botaoAtribuir.type = "button";
+      botaoAtribuir.className = "management-status-button";
+      botaoAtribuir.textContent = `Propriedades (${funcionario.propriedadeIds.length})`;
+      botaoAtribuir.setAttribute(
+        "aria-label",
+        `Atribuir propriedades para ${funcionario.nome} ${funcionario.sobrenome}`
+      );
+      botaoAtribuir.addEventListener("click", () => abrirAtribuicao(funcionario));
+      acoes.appendChild(botaoAtribuir);
     }
     linha.appendChild(acoes);
     listaFuncionarios.appendChild(linha);
@@ -77,6 +97,70 @@ async function carregarFuncionarios() {
     listaFuncionarios.appendChild(linha);
   }
 }
+
+function abrirAtribuicao(funcionario) {
+  funcionarioEmAtribuicao = funcionario;
+  document.getElementById("titulo-atribuicao-propriedades").textContent =
+    `Propriedades de ${funcionario.nome} ${funcionario.sobrenome}`;
+  mensagemAtribuicao.textContent = "";
+  mensagemAtribuicao.className = "management-message management-full";
+  listaAtribuicao.replaceChildren();
+  const selecionadas = new Set(funcionario.propriedadeIds);
+  if (!propriedadesDisponiveis.length) {
+    const vazio = document.createElement("p");
+    vazio.className = "empty";
+    vazio.textContent = "Nenhuma propriedade cadastrada.";
+    listaAtribuicao.appendChild(vazio);
+  }
+  for (const propriedade of propriedadesDisponiveis) {
+    const rotulo = document.createElement("label");
+    rotulo.className = "property-sensor-option";
+    const caixa = document.createElement("input");
+    caixa.type = "checkbox";
+    caixa.value = propriedade.id;
+    caixa.checked = selecionadas.has(propriedade.id);
+    const texto = document.createElement("span");
+    texto.textContent = `${propriedade.nome} · ${propriedade.municipio}/${propriedade.uf}`;
+    rotulo.append(caixa, texto);
+    listaAtribuicao.appendChild(rotulo);
+  }
+  dialogAtribuicao.showModal();
+}
+
+document.getElementById("cancelar-atribuicao-propriedades").addEventListener("click", () => {
+  dialogAtribuicao.close();
+});
+
+formAtribuicao.addEventListener("submit", async event => {
+  event.preventDefault();
+  if (!funcionarioEmAtribuicao) return;
+  const propriedadeIds = [...listaAtribuicao.querySelectorAll('input[type="checkbox"]:checked')]
+    .map(caixa => caixa.value);
+  botaoSalvarAtribuicao.disabled = true;
+  mensagemAtribuicao.textContent = "Salvando atribuições…";
+  mensagemAtribuicao.className = "management-message management-full";
+  try {
+    await GW.requisitar("PATCH", "/api/funcionarios", {
+      id: funcionarioEmAtribuicao.id, propriedadeIds
+    });
+  } catch (erro) {
+    mensagemAtribuicao.textContent = erro.message;
+    mensagemAtribuicao.className = "management-message management-full error";
+    botaoSalvarAtribuicao.disabled = false;
+    return;
+  }
+  dialogAtribuicao.close();
+  mensagemLista.textContent = "Atribuições de propriedades atualizadas.";
+  mensagemLista.className = "management-message success";
+  try {
+    await carregarFuncionarios();
+  } catch (erro) {
+    mensagemLista.textContent = `Atribuições salvas, mas não foi possível atualizar a lista: ${erro.message}`;
+    mensagemLista.className = "management-message error";
+  } finally {
+    botaoSalvarAtribuicao.disabled = false;
+  }
+});
 
 async function carregarSenhaDoDia(rotacionar = false) {
   mensagemSenhaDoDia.textContent = "Carregando senha…";

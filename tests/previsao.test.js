@@ -23,6 +23,18 @@ test("estima cruzamento de limite dentro do horizonte", () => {
   assert.equal(resultado.previsoes[0].horas, 1);
 });
 
+test("usa os limites da propriedade atribuída ao sensor", () => {
+  const agora = Date.now();
+  const leituras = leiturasDeTemperatura(agora, [21, 22, 23, 24, 24.5]);
+  const resultado = preverCondicoes(leituras, agora, () => ({
+    temperaturaMinima: 10, temperaturaMaxima: 25,
+    umidadeMinima: 40, umidadeMaxima: 70
+  }));
+
+  assert.equal(resultado.previsoes.length, 1);
+  assert.equal(resultado.previsoes[0].limite, 25);
+});
+
 test("marca como demonstrativa a previsão do sensor de demonstração", () => {
   const agora = Date.now();
   const leituras = leiturasDeTemperatura(agora, [27.8, 28.2, 28.6, 29, 29.4])

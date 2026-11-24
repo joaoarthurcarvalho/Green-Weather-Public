@@ -94,13 +94,15 @@ tr.is-max td{background:rgba(119,214,160,.035)}
 .climate-limits h2{margin-bottom:6px;font-size:17px}
 .climate-limits>p{margin-bottom:18px;color:var(--muted);font-size:13px}
 .climate-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.climate-form .climate-property-field{grid-column:1/-1}
 .climate-form .field{display:flex;flex-direction:column;gap:7px;min-width:0}
 .climate-form .field label{font-size:12px;color:var(--text-soft);font-weight:650}
-.climate-form .field input{
+.climate-form .field input,.climate-form .field select{
   min-height:44px;width:100%;padding:10px 12px;border:1px solid var(--border);
   border-radius:10px;background:var(--bg);color:var(--text);font:inherit;font-size:14px;
 }
-.climate-form .field input:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(119,214,160,.14)}
+.climate-form .field input:focus,.climate-form .field select:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(119,214,160,.14)}
+.climate-property-message{grid-column:1/-1;min-height:0;margin:-8px 0 0;color:var(--muted);font-size:12px}
 .climate-actions{grid-column:1/-1;display:flex;align-items:center;gap:12px}
 .climate-actions .management-message{min-height:20px;color:var(--muted);font-size:13px}
 .climate-actions .management-message.success{color:var(--green)}
@@ -109,4 +111,5 @@ tr.is-max td{background:rgba(119,214,160,.035)}
   .climate-form{grid-template-columns:1fr}
   .climate-actions{grid-column:auto;align-items:stretch;flex-direction:column}
   .climate-actions .btn{width:100%}
+  .climate-form .climate-property-field,.climate-property-message{grid-column:auto}
 }

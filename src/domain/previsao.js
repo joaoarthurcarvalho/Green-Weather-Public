@@ -19,7 +19,7 @@ function regressao(pontos, chave, tsReferencia) {
   return xs.reduce((s, x, i) => s + (x - mediaX) * (ys[i] - mediaY), 0) / variacaoX;
 }
 
-function preverCondicoes(leituras, agora = Date.now()) {
+function preverCondicoes(leituras, agora = Date.now(), limitesParaSensor = () => null) {
   const porSensor = new Map();
   let totalJanela = 0;
   let ultimaLeituraTs = null;
@@ -41,10 +41,14 @@ function preverCondicoes(leituras, agora = Date.now()) {
     sensoresRecentes++;
     if (pontos.length < MIN_LEITURAS || atual.ts - pontos[0].ts < MIN_INTERVALO_MS) continue;
     sensoresAnalisados++;
+    const limites = limitesParaSensor(sensor) || {
+      temperaturaMinima: TEMP_MIN, temperaturaMaxima: TEMP_MAX,
+      umidadeMinima: UMID_MIN, umidadeMaxima: UMID_MAX
+    };
 
     for (const faixa of [
-      { chave: "t", grandeza: "temperatura", unidade: "°C", min: TEMP_MIN, max: TEMP_MAX },
-      { chave: "u", grandeza: "umidade", unidade: "%", min: UMID_MIN, max: UMID_MAX }
+      { chave: "t", grandeza: "temperatura", unidade: "°C", min: limites.temperaturaMinima, max: limites.temperaturaMaxima },
+      { chave: "u", grandeza: "umidade", unidade: "%", min: limites.umidadeMinima, max: limites.umidadeMaxima }
     ]) {
       const valor = atual[faixa.chave];
       if (valor < faixa.min || valor > faixa.max) continue;

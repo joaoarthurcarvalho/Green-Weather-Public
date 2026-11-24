@@ -6,6 +6,8 @@ const mensagemPropriedade = document.getElementById("mensagem-propriedade");
 const botaoPropriedade = document.getElementById("salvar-propriedade");
 const usuarioAtual = GW.usuarioAtual();
 const ehSuperadmin = usuarioAtual && usuarioAtual.papel === "superadmin";
+const ehFuncionario = usuarioAtual && usuarioAtual.papel === "funcionario";
+const ehEngenheiro = usuarioAtual && usuarioAtual.papel === "engenheiro";
 const dialogConfiguracao = document.getElementById("dialog-configuracao-propriedade");
 const formConfiguracao = document.getElementById("form-configuracao-propriedade");
 const campoNomeConfiguracao = document.getElementById("config-nome-propriedade");
@@ -22,6 +24,17 @@ if (ehSuperadmin) {
   document.querySelector(".management-intro").textContent =
     "Consulte e configure as propriedades cadastradas, cadastre novas e atribua sensores.";
   document.querySelector(".management-list h2").textContent = "Todas as propriedades";
+}
+if (ehFuncionario) {
+  formPropriedade.closest(".card").hidden = true;
+  document.querySelector(".management-intro").textContent =
+    "Consulte e configure as propriedades atribuídas a esta conta.";
+  document.querySelector(".management-list h2").textContent = "Propriedades atribuídas";
+}
+if (ehEngenheiro) {
+  document.querySelector(".management-intro").textContent =
+    "Cadastre propriedades sob sua responsabilidade e configure as propriedades atribuídas à sua conta.";
+  document.querySelector(".management-list h2").textContent = "Propriedades atribuídas";
 }
 
 function mostrarMensagem(texto, tipo = "") {

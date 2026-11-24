@@ -48,3 +48,47 @@ test("persiste limites climáticos alterados e os aplica às novas leituras", ()
     fs.rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test("aplica e persiste limites independentes por propriedade e sensor", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "green-weather-limites-propriedade-"));
+  try {
+    const partes = () => ({ d: "2026-11-16", h: "10:00" });
+    let alarmes;
+    const limitesPropriedade = {
+      temperaturaMinima: 10, temperaturaMaxima: 25,
+      umidadeMinima: 40, umidadeMaxima: 70
+    };
+    alarmes = criarAlarmes({
+      dir, partes,
+      limitesParaSensor: sensor => sensor === "sensor-a"
+        ? alarmes.obterLimitesPropriedade("propriedade-a")
+        : null
+    });
+    alarmes.configurarLimitesPropriedade("propriedade-a", limitesPropriedade);
+    alarmes.processar([
+      { s: "sensor-a", ts: 1000, t: 27, u: 60 },
+      { s: "sensor-b", ts: 1000, t: 27, u: 60 }
+    ]);
+
+    const resultado = alarmes.consultar({ limite: 10 });
+    assert.deepEqual(resultado.alarmes.map(alarme => alarme.sensor), ["sensor-a"]);
+    alarmes.configurarLimitesPropriedade("propriedade-a", {
+      ...limitesPropriedade, temperaturaMaxima: 26
+    });
+    alarmes.processar([{ s: "sensor-a", ts: 2000, t: 27, u: 60 }]);
+    assert.match(alarmes.consultar({ limite: 10 }).alarmes[0].descricao, /limite 26 °C/);
+
+    let carregado;
+    carregado = criarAlarmes({
+      dir, partes,
+      limitesParaSensor: sensor => sensor === "sensor-a"
+        ? carregado.obterLimitesPropriedade("propriedade-a")
+        : null
+    });
+    assert.equal(carregado.obterLimitesPropriedade("propriedade-a").temperaturaMaxima, 26);
+    carregado.removerLimitesPropriedade("propriedade-a");
+    assert.deepEqual(carregado.obterLimitesPropriedade("propriedade-a"), carregado.obterLimites());
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});

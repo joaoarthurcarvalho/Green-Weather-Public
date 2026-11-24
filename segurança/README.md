@@ -51,11 +51,11 @@ propriedades:
   salvos anteriormente também são recalculados antes de serem retornados.
 
 O escopo é aplicado às APIs de sensores, leituras, alarmes, resumo, previsão,
-resumo inteligente e relatórios. Funcionários comuns não têm autorização para
-criar ou editar propriedades, e atribuir sensores continua sendo exclusivo do
+resumo inteligente, relatórios e limites climáticos. Funcionários e engenheiros
+consultam e configuram somente propriedades atribuídas; funcionários não podem
+cadastrar propriedades, e atribuir sensores continua sendo exclusivo do
 superadmin. Os testes de integração em `tests/propriedades.test.js` verificam
-acesso entre responsáveis, alteração de ID, leitura global para funcionário e
-negação de alterações.
+atribuições, alteração de ID e negação de acesso a propriedades alheias.
 
 ### Limitações e próximos passos
 
@@ -67,12 +67,10 @@ negação de alterações.
   `SENSOR_API_KEY`, não uma credencial individual por sensor. Proteja essa chave
   e planeje credenciais por dispositivo antes de expor a ingestão em ambientes
   não confiáveis.
-- A associação dos engenheiros é feita pela propriedade responsável.
-- Funcionários comuns têm acesso global de leitura por decisão de produto; se
-  isso mudar, será necessário criar uma associação explícita funcionário–
-  propriedade e revisar os testes de autorização.
-- Os limites climáticos são uma configuração compartilhada, não uma configuração
-  isolada por propriedade.
+- A atribuição é mantida na propriedade e serve como fonte de autorização para
+  funcionários e engenheiros.
+- Os limites climáticos são isolados por propriedade; o padrão do sistema só
+  pode ser alterado pelo superadmin.
 
 ## Verificação
 

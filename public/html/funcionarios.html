@@ -104,6 +104,23 @@
     <button type="button" class="management-tab" id="atualizar-senha-do-dia">Gerar nova senha</button>
   </section>
 </main>
+<dialog id="dialog-atribuicao-propriedades" class="property-config-dialog"
+  aria-labelledby="titulo-atribuicao-propriedades">
+  <form class="management-form" id="form-atribuicao-propriedades" novalidate>
+    <h2 class="management-full" id="titulo-atribuicao-propriedades">Atribuir propriedades</h2>
+    <p class="management-message management-full">Selecione as propriedades que esta conta poderá consultar e configurar.</p>
+    <div class="management-field management-full">
+      <span class="property-sensor-label">Propriedades disponíveis</span>
+      <div class="property-sensor-list" id="lista-propriedades-atribuicao"></div>
+    </div>
+    <p class="management-message management-full" id="mensagem-atribuicao-propriedades"
+      role="status" aria-live="polite"></p>
+    <div class="management-actions">
+      <button class="btn btn-ghost" type="button" id="cancelar-atribuicao-propriedades">Cancelar</button>
+      <button class="btn btn-primary" type="submit" id="salvar-atribuicao-propriedades">Salvar atribuições</button>
+    </div>
+  </form>
+</dialog>
 <script src="../js/gestao-funcionarios.js"></script>
 </body>
 </html>

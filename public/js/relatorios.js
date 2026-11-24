@@ -49,7 +49,7 @@ function renderizarRelatorio(dados, observacoes) {
   meta.textContent = `Período: ${brData(dados.inicio)} a ${brData(dados.fim)} · Gerado em ${new Date(dados.geradoEm).toLocaleString("pt-BR")}`;
   relatorio.append(titulo, meta);
 
-  const r = dados.resumo, l = dados.limites;
+  const r = dados.resumo;
   adicionarSecao("Resumo das leituras", [
     ["Leituras consideradas", String(r.leituras)],
     ["Sensores monitorados", String(r.sensores)],
@@ -64,9 +64,18 @@ function renderizarRelatorio(dados, observacoes) {
     ["Umidade mínima", formatarExtremo(r.umidadeMinima, "%")],
     ["Umidade máxima", formatarExtremo(r.umidadeMaxima, "%")]
   ]);
+  const faixas = dados.limitesPorPropriedade || [{
+    nome: "Padrão do sistema", ...dados.limites
+  }];
   adicionarSecao("Faixas e alarmes", [
-    ["Temperatura configurada", `${ptNumero(l.temperaturaMinima)} a ${ptNumero(l.temperaturaMaxima)} °C`],
-    ["Umidade configurada", `${ptNumero(l.umidadeMinima)} a ${ptNumero(l.umidadeMaxima)} %`],
+    ...faixas.map(faixa => [
+      `${faixa.nome} · temperatura`,
+      `${ptNumero(faixa.temperaturaMinima)} a ${ptNumero(faixa.temperaturaMaxima)} °C`
+    ]),
+    ...faixas.map(faixa => [
+      `${faixa.nome} · umidade`,
+      `${ptNumero(faixa.umidadeMinima)} a ${ptNumero(faixa.umidadeMaxima)} %`
+    ]),
     ["Alarmes no período", String(dados.alarmes.total)],
     ["Alarmes ainda ativos", String(dados.alarmes.ativos)]
   ]);

@@ -149,7 +149,11 @@ if (fs.existsSync(ARQ_LEIT)) {
 }
 
 /* ---------- Alarmes ---------- */
-const alarmes = require("./domain/alarmes")({ dir: DIR_DADOS, partes });
+const alarmes = require("./domain/alarmes")({
+  dir: DIR_DADOS,
+  partes,
+  limitesParaSensor: sensor => limitesDoSensor(sensor)
+});
 alarmes.verificarSensores(sensores);
 setInterval(() => alarmes.verificarSensores(sensores), 60 * 1000).unref();
 
@@ -160,6 +164,18 @@ const normEmail = e => String(e || "").trim().toLowerCase();
 const emailOk   = e => /^\S+@\S+\.\S+$/.test(e) && e.length <= 120;
 const textoOk   = (v, max) => typeof v === "string" && v.trim().length > 0 && v.trim().length <= max;
 const senhaOk   = s => typeof s === "string" && s.length >= 6 && s.length <= 200;
+function usuariosAtribuidos(propriedade) {
+  if (Array.isArray(propriedade.usuariosAtribuidos)) return propriedade.usuariosAtribuidos;
+  return propriedade.responsavel ? [propriedade.responsavel] : [];
+}
+function propriedadeAtribuida(usuario, propriedade) {
+  return usuariosAtribuidos(propriedade).includes(usuario.id);
+}
+function dadosPublicosPropriedade(propriedade) {
+  const dados = { ...propriedade };
+  delete dados.usuariosAtribuidos;
+  return dados;
+}
 const publico   = u => ({
   nome: u.nome, sobrenome: u.sobrenome, email: u.email,
   papel: u.papel || "funcionario", matricula: u.matricula || null,
@@ -303,12 +319,14 @@ function propriedadesPorSensor() {
   }
   return mapa;
 }
+function limitesDoSensor(sensor, mapa = propriedadesPorSensor()) {
+  const propriedade = mapa.get(sensor);
+  return propriedade ? alarmes.obterLimitesPropriedade(propriedade.id) : alarmes.obterLimites();
+}
 function sensoresPermitidos(usuario) {
-  if (usuario.papel === "superadmin" || usuario.papel === "funcionario")
-    return new Set(sensores.keys());
-  // Sensores pertencem ao responsável da propriedade à qual estão vinculados.
+  if (usuario.papel === "superadmin") return new Set(sensores.keys());
   const mapa = propriedadesPorSensor();
-  return new Set([...mapa].filter(([, propriedade]) => propriedade.responsavel === usuario.id)
+  return new Set([...mapa].filter(([, propriedade]) => propriedadeAtribuida(usuario, propriedade))
     .map(([sensor]) => sensor));
 }
 function validarSensorPermitido(sensor, permitidos) {
@@ -317,6 +335,10 @@ function validarSensorPermitido(sensor, permitidos) {
 }
 function criarDadosRelatorio(inicio, fim, usuario) {
   const permitidos = sensoresPermitidos(usuario);
+  const propriedadeDosSensores = propriedadesPorSensor();
+  const limitesPorSensor = new Map([...permitidos].map(sensor => [
+    sensor, limitesDoSensor(sensor, propriedadeDosSensores)
+  ]));
   const leiturasPeriodo = [...porDia.entries()]
     .filter(([data]) => data >= inicio && data <= fim)
     .flatMap(([, leiturasDia]) => leiturasDia)
@@ -327,18 +349,30 @@ function criarDadosRelatorio(inicio, fim, usuario) {
       : atual, null);
   const soma = campo => leiturasPeriodo.reduce((total, leitura) => total + leitura[campo], 0);
   const limites = alarmes.obterLimites();
+  const propriedadesVisiveis = propriedades.filter(propriedade =>
+    usuario.papel === "superadmin" || propriedadeAtribuida(usuario, propriedade));
+  const limitesPorPropriedade = propriedadesVisiveis.map(propriedade => ({
+    id: propriedade.id,
+    nome: propriedade.nome,
+    ...alarmes.obterLimitesPropriedade(propriedade.id)
+  }));
+  if (usuario.papel === "superadmin" &&
+      [...permitidos].some(sensor => !propriedadeDosSensores.has(sensor)))
+    limitesPorPropriedade.push({ id: null, nome: "Padrão do sistema", ...limites });
   const dadosAlarmes = alarmes.consultar({ inicio, fim, limite: 0, sensores: [...permitidos] });
   return {
-    inicio, fim, geradoEm: new Date().toISOString(), limites,
+    inicio, fim, geradoEm: new Date().toISOString(), limites, limitesPorPropriedade,
     resumo: {
       leituras: leiturasPeriodo.length,
       sensores: new Set(leiturasPeriodo.map(l => l.s)).size,
       temperaturaMedia: leiturasPeriodo.length ? Math.round(soma("t") / leiturasPeriodo.length * 10) / 10 : null,
       umidadeMedia: leiturasPeriodo.length ? Math.round(soma("u") / leiturasPeriodo.length * 10) / 10 : null,
       leiturasForaTemperatura: leiturasPeriodo.filter(l =>
-        l.t < limites.temperaturaMinima || l.t > limites.temperaturaMaxima).length,
+        l.t < limitesPorSensor.get(l.s).temperaturaMinima ||
+        l.t > limitesPorSensor.get(l.s).temperaturaMaxima).length,
       leiturasForaUmidade: leiturasPeriodo.filter(l =>
-        l.u < limites.umidadeMinima || l.u > limites.umidadeMaxima).length,
+        l.u < limitesPorSensor.get(l.s).umidadeMinima ||
+        l.u > limitesPorSensor.get(l.s).umidadeMaxima).length,
       temperaturaMinima: extremum("t", (a, b) => a < b),
       temperaturaMaxima: extremum("t", (a, b) => a > b),
       umidadeMinima: extremum("u", (a, b) => a < b),
@@ -379,18 +413,56 @@ const rotas = {
     enviar(res, 200, { usuario: publico(exigir(req).usuario) });
   },
 
-  "GET /api/limites-climaticos": async (req, res) => {
-    exigir(req);
-    enviar(res, 200, { limites: alarmes.obterLimites() });
+  "GET /api/limites-climaticos": async (req, res, url) => {
+    const { usuario } = exigir(req);
+    const propriedadeId = url.searchParams.get("propriedadeId");
+    if (propriedadeId) {
+      const propriedade = propriedades.find(item => item.id === propriedadeId);
+      if (!propriedade ||
+          (usuario.papel !== "superadmin" && !propriedadeAtribuida(usuario, propriedade)))
+        throw new ErroHttp(404, "Propriedade não encontrada.");
+      enviar(res, 200, {
+        propriedadeId,
+        limites: alarmes.obterLimitesPropriedade(propriedadeId),
+        herdados: !alarmes.temLimitesPropriedade(propriedadeId)
+      });
+      return;
+    }
+
+    const acessiveis = propriedades.filter(propriedade =>
+      usuario.papel === "superadmin" || propriedadeAtribuida(usuario, propriedade));
+    const lista = acessiveis.map(propriedade => ({
+      id: propriedade.id,
+      nome: propriedade.nome,
+      herdados: !alarmes.temLimitesPropriedade(propriedade.id),
+      limites: alarmes.obterLimitesPropriedade(propriedade.id)
+    }));
+    const distintos = new Set(lista.map(item => JSON.stringify(item.limites)));
+    enviar(res, 200, {
+      limites: distintos.size > 1 ? null : lista.length ? lista[0].limites : alarmes.obterLimites(),
+      limitesVariados: distintos.size > 1,
+      propriedades: lista,
+      padrao: alarmes.obterLimites()
+    });
   },
 
   "PUT /api/limites-climaticos": async (req, res) => {
-    exigirPapel(req, ["engenheiro", "superadmin"]);
+    const { usuario } = exigirPapel(req, ["engenheiro", "superadmin"]);
     const b = await lerCorpo(req, 20_000);
     const campos = ["temperaturaMinima", "temperaturaMaxima", "umidadeMinima", "umidadeMaxima"];
     if (!b || typeof b !== "object" || Array.isArray(b) ||
         campos.some(campo => typeof b[campo] !== "number" || !Number.isFinite(b[campo])))
       throw new ErroHttp(400, "Informe os quatro limites climáticos como números.");
+    if (b.propriedadeId !== undefined) {
+      if (typeof b.propriedadeId !== "string")
+        throw new ErroHttp(400, "Informe uma propriedade válida.");
+      const propriedade = propriedades.find(item => item.id === b.propriedadeId);
+      if (!propriedade ||
+          (usuario.papel !== "superadmin" && !propriedadeAtribuida(usuario, propriedade)))
+        throw new ErroHttp(404, "Propriedade não encontrada.");
+    } else if (usuario.papel !== "superadmin") {
+      throw new ErroHttp(403, "Engenheiros só podem alterar limites de uma propriedade atribuída.");
+    }
     const limites = Object.fromEntries(campos.map(campo => [campo, b[campo]]));
     if (
         limites.temperaturaMinima < -50 || limites.temperaturaMaxima > 100 ||
@@ -398,8 +470,29 @@ const rotas = {
         limites.umidadeMinima < 0 || limites.umidadeMaxima > 100 ||
         limites.umidadeMinima >= limites.umidadeMaxima)
       throw new ErroHttp(400, "Informe faixas válidas: temperatura de -50 a 100 °C e umidade de 0 a 100%, com mínimo menor que máximo.");
-    alarmes.configurarLimites(limites);
-    enviar(res, 200, { limites: alarmes.obterLimites() });
+    if (b.propriedadeId) {
+      alarmes.configurarLimitesPropriedade(b.propriedadeId, limites);
+      enviar(res, 200, { propriedadeId: b.propriedadeId, limites, herdados: false });
+    } else {
+      alarmes.configurarLimites(limites);
+      enviar(res, 200, { limites: alarmes.obterLimites(), herdados: false });
+    }
+  },
+
+  "DELETE /api/limites-climaticos": async (req, res, url) => {
+    const { usuario } = exigirPapel(req, ["engenheiro", "superadmin"]);
+    const propriedadeId = url.searchParams.get("propriedadeId");
+    if (!propriedadeId) throw new ErroHttp(400, "Informe a propriedade.");
+    const propriedade = propriedades.find(item => item.id === propriedadeId);
+    if (!propriedade ||
+        (usuario.papel !== "superadmin" && !propriedadeAtribuida(usuario, propriedade)))
+      throw new ErroHttp(404, "Propriedade não encontrada.");
+    alarmes.removerLimitesPropriedade(propriedadeId);
+    enviar(res, 200, {
+      propriedadeId,
+      limites: alarmes.obterLimitesPropriedade(propriedadeId),
+      herdados: true
+    });
   },
 
   "GET /api/relatorio-tecnico": async (req, res, url) => {
@@ -452,7 +545,10 @@ const rotas = {
     exigirPapel(req, "superadmin");
     enviar(res, 200, {
       funcionarios: db.usuarios.map(usuario => ({
-        ...publico(usuario), id: usuario.id
+        ...publico(usuario), id: usuario.id,
+        propriedadeIds: propriedades
+          .filter(propriedade => propriedadeAtribuida(usuario, propriedade))
+          .map(propriedade => propriedade.id)
       }))
     });
   },
@@ -510,17 +606,48 @@ const rotas = {
   "PATCH /api/funcionarios": async (req, res) => {
     exigirPapel(req, "superadmin");
     const b = await lerCorpo(req, 20_000);
-    if (!b || typeof b !== "object" || Array.isArray(b) ||
-        typeof b.id !== "string" || typeof b.ativo !== "boolean")
-      throw new ErroHttp(400, "Informe a conta e o novo status.");
+    if (!b || typeof b !== "object" || Array.isArray(b) || typeof b.id !== "string" ||
+        (b.ativo === undefined && b.propriedadeIds === undefined) ||
+        (b.ativo !== undefined && typeof b.ativo !== "boolean"))
+      throw new ErroHttp(400, "Informe a conta e um status ou uma lista de propriedades válidos.");
     const usuario = db.usuarios.find(conta => conta.id === b.id);
     if (!usuario) throw new ErroHttp(404, "Conta não encontrada.");
     if (usuario.papel === "superadmin")
       throw new ErroHttp(403, "Contas de superadmin não podem ser alteradas por esta tela.");
 
-    usuario.ativo = b.ativo;
-    if (!b.ativo) db.sessoes = db.sessoes.filter(sessao => sessao.usuario !== usuario.id);
-    salvarDb();
+    if (b.propriedadeIds !== undefined) {
+      if (!Array.isArray(b.propriedadeIds) || b.propriedadeIds.length > propriedades.length ||
+          b.propriedadeIds.some(id => typeof id !== "string" ||
+            !propriedades.some(propriedade => propriedade.id === id)) ||
+          new Set(b.propriedadeIds).size !== b.propriedadeIds.length)
+        throw new ErroHttp(400, "A lista de propriedades atribuídas é inválida.");
+      const estadoAnterior = propriedades.map(propriedade => ({
+        usuariosAtribuidos: Array.isArray(propriedade.usuariosAtribuidos)
+          ? [...propriedade.usuariosAtribuidos] : undefined
+      }));
+      const selecionadas = new Set(b.propriedadeIds);
+      try {
+        propriedades.forEach(propriedade => {
+          const atribuidos = usuariosAtribuidos(propriedade).filter(id => id !== usuario.id);
+          if (selecionadas.has(propriedade.id)) atribuidos.push(usuario.id);
+          propriedade.usuariosAtribuidos = atribuidos;
+        });
+        salvarPropriedades();
+      } catch (erro) {
+        propriedades.forEach((propriedade, indice) => {
+          if (estadoAnterior[indice].usuariosAtribuidos)
+            propriedade.usuariosAtribuidos = estadoAnterior[indice].usuariosAtribuidos;
+          else delete propriedade.usuariosAtribuidos;
+        });
+        throw erro;
+      }
+    }
+
+    if (b.ativo !== undefined) {
+      usuario.ativo = b.ativo;
+      if (!b.ativo) db.sessoes = db.sessoes.filter(sessao => sessao.usuario !== usuario.id);
+      salvarDb();
+    }
     enviar(res, 200, { funcionario: publico(usuario) });
   },
 
@@ -541,12 +668,12 @@ const rotas = {
   },
 
   "GET /api/propriedades": async (req, res) => {
-    const { usuario } = exigirPapel(req, ["engenheiro", "superadmin"]);
+    const { usuario } = exigirPapel(req, ["funcionario", "engenheiro", "superadmin"]);
     enviar(res, 200, {
       propriedades: propriedades
-        .filter(propriedade => usuario.papel === "superadmin" || propriedade.responsavel === usuario.id)
+        .filter(propriedade => usuario.papel === "superadmin" || propriedadeAtribuida(usuario, propriedade))
         .map(propriedade => ({
-          ...propriedade,
+          ...dadosPublicosPropriedade(propriedade),
           sensores: Array.isArray(propriedade.sensores) ? propriedade.sensores : []
         }))
         .sort((a, b) => b.criadaEm.localeCompare(a.criadaEm))
@@ -568,15 +695,17 @@ const rotas = {
 
     const propriedade = {
       id: crypto.randomUUID(), nome, municipio, uf, areaHa,
-      responsavel: usuario.id, criadaEm: new Date().toISOString()
+      responsavel: usuario.id,
+      usuariosAtribuidos: usuario.papel === "superadmin" ? [] : [usuario.id],
+      criadaEm: new Date().toISOString()
     };
     propriedades.push(propriedade);
     salvarPropriedades();
-    enviar(res, 201, { propriedade });
+    enviar(res, 201, { propriedade: dadosPublicosPropriedade(propriedade) });
   },
 
   "PATCH /api/propriedades": async (req, res) => {
-    const { usuario } = exigirPapel(req, ["engenheiro", "superadmin"]);
+    const { usuario } = exigirPapel(req, ["funcionario", "engenheiro", "superadmin"]);
     const b = await lerCorpo(req, 20_000);
     if (!b || typeof b !== "object" || Array.isArray(b) ||
         typeof b.id !== "string" || !textoOk(b.nome, 120) ||
@@ -592,7 +721,7 @@ const rotas = {
       throw new ErroHttp(400, "A lista de sensores é inválida.");
 
     const propriedade = propriedades.find(item => item.id === b.id);
-    if (!propriedade || (usuario.papel !== "superadmin" && propriedade.responsavel !== usuario.id))
+    if (!propriedade || (usuario.papel !== "superadmin" && !propriedadeAtribuida(usuario, propriedade)))
       throw new ErroHttp(404, "Propriedade não encontrada.");
 
     const estadoAnterior = propriedades.map(item => ({
@@ -623,7 +752,7 @@ const rotas = {
     }
     enviar(res, 200, {
       propriedade: {
-        ...propriedade,
+        ...dadosPublicosPropriedade(propriedade),
         sensores: Array.isArray(propriedade.sensores) ? propriedade.sensores : []
       }
     });
@@ -723,12 +852,20 @@ const rotas = {
   "GET /api/resumo": async (req, res) => {
     const { usuario } = exigir(req);
     const permitidos = sensoresPermitidos(usuario);
+    const propriedadeDosSensores = propriedadesPorSensor();
     const agora = Date.now(); let on = 0, somaT = 0, somaU = 0; const lista = [];
     for (const [id, s] of sensores) {
       if (!permitidos.has(id)) continue;
       const online = agora - s.ts <= ONLINE_MS;
       if (online) { on++; somaT += s.t; somaU += s.u; }
-      lista.push({ id, online, ultimaLeitura: new Date(s.ts).toISOString() });
+      const propriedade = propriedadeDosSensores.get(id);
+      lista.push({
+        id, online, ultimaLeitura: new Date(s.ts).toISOString(),
+        temperatura: s.t, umidade: s.u,
+        propriedadeId: propriedade ? propriedade.id : null,
+        propriedadeNome: propriedade ? propriedade.nome : null,
+        limites: limitesDoSensor(id, propriedadeDosSensores)
+      });
     }
     lista.sort((a, b) => a.id.localeCompare(b.id));
     enviar(res, 200, {
@@ -742,7 +879,12 @@ const rotas = {
   "GET /api/previsao": async (req, res) => {
     const { usuario } = exigir(req);
     const permitidos = sensoresPermitidos(usuario);
-    enviar(res, 200, preverCondicoes(recentesPrevisao.filter(leitura => permitidos.has(leitura.s))));
+    const propriedadeDosSensores = propriedadesPorSensor();
+    enviar(res, 200, preverCondicoes(
+      recentesPrevisao.filter(leitura => permitidos.has(leitura.s)),
+      Date.now(),
+      sensor => limitesDoSensor(sensor, propriedadeDosSensores)
+    ));
   },
 
   "GET /api/resumo-inteligente": async (req, res) => {

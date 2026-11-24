@@ -15,9 +15,7 @@
   const tip = document.getElementById("tip");
   let pontosGrafico = [];
   let geometriaGrafico = null;
-  let limites = null;
   let sensoresOnline = new Map();
-  let resumoAtual = null;
   let leiturasAtuais = [];
 
   function atualizaRelogio(){
@@ -30,22 +28,26 @@
       `${doisDigitos(data.getHours())}:${doisDigitos(data.getMinutes())}`;
   }
 
-  function classifica(elemento, valor, minimo, maximo){
+  function classificaSensores(elemento, sensores, campo, minimo, maximo){
     elemento.classList.remove("warn", "danger");
-    if (!Number.isFinite(valor)) {
+    const monitorados = sensores.filter(sensor =>
+      sensor.online && Number.isFinite(sensor[campo]) && Number.isFinite(sensor.limites && sensor.limites[minimo]) &&
+      Number.isFinite(sensor.limites && sensor.limites[maximo]));
+    if (!monitorados.length) {
       elemento.textContent = "Sem leituras recentes";
       return;
     }
-    if (valor < minimo || valor > maximo) {
+    const foraDaFaixa = monitorados.filter(sensor =>
+      sensor[campo] < sensor.limites[minimo] || sensor[campo] > sensor.limites[maximo]);
+    if (foraDaFaixa.length) {
       elemento.classList.add("warn");
-      elemento.textContent = valor < minimo ? "Abaixo do ideal" : "Acima do ideal";
+      elemento.textContent = `Fora do ideal em ${foraDaFaixa.length} sensor(es)`;
       return;
     }
-    elemento.textContent = "Dentro do ideal";
+    elemento.textContent = "Dentro do ideal em todos";
   }
 
   function atualizarCartoes(resumo){
-    resumoAtual = resumo;
     const temperatura = Number.isFinite(resumo.temp) ? resumo.temp : null;
     const umidade = Number.isFinite(resumo.umid) ? resumo.umid : null;
     resumoElementos.temperatura.textContent =
@@ -67,13 +69,14 @@
 
     sensoresOnline = new Map((resumo.sensores || []).map(sensor => [sensor.id, sensor.online]));
     desenharTabela(leiturasAtuais);
-    if (limites) {
-      classifica(resumoElementos.temperaturaStatus, temperatura, limites.temperaturaMinima, limites.temperaturaMaxima);
-      classifica(resumoElementos.umidadeStatus, umidade, limites.umidadeMinima, limites.umidadeMaxima);
-    } else {
-      classifica(resumoElementos.temperaturaStatus, temperatura, 20, 30);
-      classifica(resumoElementos.umidadeStatus, umidade, 50, 80);
-    }
+    classificaSensores(
+      resumoElementos.temperaturaStatus, resumo.sensores || [], "temperatura",
+      "temperaturaMinima", "temperaturaMaxima"
+    );
+    classificaSensores(
+      resumoElementos.umidadeStatus, resumo.sensores || [], "umidade",
+      "umidadeMinima", "umidadeMaxima"
+    );
   }
 
   function formatoDataHora(leitura){
@@ -242,12 +245,16 @@
 
   async function carregarLimites(){
     try {
-      ({ limites } = await GW.requisitar("GET", "/api/limites-climaticos"));
-      resumoElementos.faixaTemperatura.textContent =
-        `Faixa ideal: ${limites.temperaturaMinima} – ${limites.temperaturaMaxima} °C`;
-      resumoElementos.faixaUmidade.textContent =
-        `Faixa ideal: ${limites.umidadeMinima} – ${limites.umidadeMaxima} %`;
-      if (resumoAtual) atualizarCartoes(resumoAtual);
+      const resultado = await GW.requisitar("GET", "/api/limites-climaticos");
+      if (resultado.limites) {
+        resumoElementos.faixaTemperatura.textContent =
+          `Faixa ideal: ${resultado.limites.temperaturaMinima} – ${resultado.limites.temperaturaMaxima} °C`;
+        resumoElementos.faixaUmidade.textContent =
+          `Faixa ideal: ${resultado.limites.umidadeMinima} – ${resultado.limites.umidadeMaxima} %`;
+      } else {
+        resumoElementos.faixaTemperatura.textContent = "Limites definidos por propriedade";
+        resumoElementos.faixaUmidade.textContent = "Limites definidos por propriedade";
+      }
     } catch (erro) {
       console.error("Não foi possível carregar os limites climáticos:", erro);
     }

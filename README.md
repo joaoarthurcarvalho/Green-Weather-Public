@@ -34,9 +34,10 @@ e os atalhos `/<pagina>.html` redirecionam para as páginas correspondentes em
 - Aplicação web servida diretamente pelo Node.js, sem dependências externas.
 - Login com senha e senha diária adicional para funcionários e engenheiros; senhas armazenadas com `scrypt`, sessões por cookie e funções de conta. O superadministrador acessa a senha diária na aba correspondente da tela Funcionários e não precisa dela para entrar. O código muda à meia-noite do fuso configurado em `FUSO`, pode ser rotacionado manualmente pelo superadministrador e é derivado de um segredo privado persistido em `data/config.json`.
 - Cadastro, ativação, desativação e exclusão de contas de funcionários e engenheiros pelo superadministrador, com matrícula automática. Contas de superadmin não podem ser alteradas ou excluídas pela tela de funcionários; desativar uma conta encerra suas sessões e bloqueia novos logins.
-- Cadastro e configuração de propriedades rurais por engenheiros agrônomos; o superadmin pode consultar e editar todas, além de atribuir sensores. O Histórico lista os dados por sensor em intervalos de 30 minutos, com a propriedade vinculada quando disponível.
-- Engenheiros acessam dados apenas dos sensores vinculados às propriedades sob sua responsabilidade. Funcionários comuns podem consultar todos os dados de sensores, histórico e alarmes em modo somente leitura; não podem consultar, criar ou editar propriedades. O superadmin mantém acesso e gestão globais. Propriedades só podem ser editadas pelo responsável ou pelo superadmin. O sistema atualmente recebe leituras dos sensores, mas não possui uma API de comandos físicos para dispositivos.
-- Configuração compartilhada de limites climáticos no Histórico por engenheiros agrônomos e superadministradores; esses perfis também podem gerar relatórios técnicos, salvá-los na conta, reabri-los e imprimir ou salvar em PDF pelo navegador.
+- Cadastro e configuração de propriedades rurais por engenheiros agrônomos; o superadmin pode consultar e editar todas, atribuir sensores e designar propriedades a funcionários e engenheiros. Esses usuários podem configurar somente as propriedades atribuídas à própria conta; funcionários não podem cadastrar novas propriedades.
+- Funcionários e engenheiros acessam dados, histórico e alarmes apenas dos sensores vinculados às propriedades atribuídas à própria conta. O superadmin mantém acesso e gestão globais. O sistema atualmente recebe leituras dos sensores, mas não possui uma API de comandos físicos para dispositivos.
+- Limites climáticos configuráveis por propriedade: engenheiros alteram somente as propriedades atribuídas, e o superadmin também controla o padrão do sistema. Alarmes, previsões, painel e relatórios aplicam os limites correspondentes a cada propriedade.
+- Engenheiros agrônomos e superadministradores podem gerar relatórios técnicos, salvá-los na conta, reabri-los e imprimir ou salvar em PDF pelo navegador.
 - Recepção de leituras de sensores com chave de API, validação básica e deduplicação.
 - Resumo de sensores e consulta de histórico agrupado por intervalo.
 - Alarmes ambientais e de sensor offline, com consulta por período e categoria.
@@ -58,6 +59,8 @@ linear simples. Uma estimativa só é exibida com pelo menos 5 leituras ao longo
 1 hora e uma leitura recente (até 15 minutos); o horizonte é de até 3 horas.
 É uma indicação estatística, não uma previsão meteorológica nem uma garantia, e
 não envia dados para provedores externos de IA.
+Consulte [Como funciona a estimativa de tendência](ESTIMATIVA-TENDENCIA.md) para
+uma explicação detalhada do cálculo e dos estados possíveis.
 Quando não houver histórico, leituras recentes ou dados suficientes, o painel
 informa a causa em vez de mostrar uma lista vazia. Se as leituras pararem por
 mais de 15 minutos, não é gerada uma previsão com dados desatualizados.

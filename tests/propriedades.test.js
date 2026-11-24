@@ -62,7 +62,7 @@ async function entrar(base, email, senha, senhaDoDia) {
   return resposta.headers.get("set-cookie").split(";")[0];
 }
 
-test("superadmin consulta todas as propriedades e engenheiros veem apenas as próprias", async () => {
+test("superadmin vê todas as propriedades e funcionários e engenheiros só as atribuídas", async () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "green-weather-propriedades-"));
   const port = await portaDisponivel();
   const base = `http://127.0.0.1:${port}`;
@@ -233,43 +233,127 @@ test("superadmin consulta todas as propriedades e engenheiros veem apenas as pr�
     });
     assert.equal(edicaoNegada.status, 404);
 
+    const atribuicaoFuncionario = await fetch(`${base}/api/funcionarios`, {
+      method: "PATCH",
+      headers: { Cookie: adminCookie, "Content-Type": "application/json" },
+      body: JSON.stringify({ id: "funcionario-1", propriedadeIds: [fazendaAna.id] })
+    });
+    assert.equal(atribuicaoFuncionario.status, 200);
+    const atribuicaoEngenheiro = await fetch(`${base}/api/funcionarios`, {
+      method: "PATCH",
+      headers: { Cookie: adminCookie, "Content-Type": "application/json" },
+      body: JSON.stringify({ id: "engenheiro-2", propriedadeIds: [fazendaAdmin.id] })
+    });
+    assert.equal(atribuicaoEngenheiro.status, 200);
+    const atribuicaoInvalida = await fetch(`${base}/api/funcionarios`, {
+      method: "PATCH",
+      headers: { Cookie: adminCookie, "Content-Type": "application/json" },
+      body: JSON.stringify({ id: "funcionario-1", propriedadeIds: ["propriedade-inexistente"] })
+    });
+    assert.equal(atribuicaoInvalida.status, 400);
+    const funcionariosAtualizados = await fetch(`${base}/api/funcionarios`, {
+      headers: { Cookie: adminCookie }
+    });
+    assert.equal(funcionariosAtualizados.status, 200);
+    const { funcionarios } = await funcionariosAtualizados.json();
+    assert.deepEqual(
+      funcionarios.find(funcionario => funcionario.id === "funcionario-1").propriedadeIds,
+      [fazendaAna.id]
+    );
+
     const funcionarioCookie = await entrar(base, "joao@example.test", senha, senhaDoDia);
+    const limitesFuncionario = {
+      propriedadeId: fazendaAna.id,
+      temperaturaMinima: 10, temperaturaMaxima: 25,
+      umidadeMinima: 40, umidadeMaxima: 70
+    };
+    const configurarLimitesAna = await fetch(`${base}/api/limites-climaticos`, {
+      method: "PUT",
+      headers: { Cookie: engenheiroCookie, "Content-Type": "application/json" },
+      body: JSON.stringify(limitesFuncionario)
+    });
+    assert.equal(configurarLimitesAna.status, 200);
+    const limitesPropriedadeFuncionario = await fetch(
+      `${base}/api/limites-climaticos?propriedadeId=${fazendaAna.id}`,
+      { headers: { Cookie: funcionarioCookie } }
+    );
+    assert.equal(limitesPropriedadeFuncionario.status, 200);
+    assert.deepEqual((await limitesPropriedadeFuncionario.json()).limites, {
+      temperaturaMinima: 10, temperaturaMaxima: 25,
+      umidadeMinima: 40, umidadeMaxima: 70
+    });
+    const limitesPropriedadeAlheia = await fetch(
+      `${base}/api/limites-climaticos?propriedadeId=${fazendaAdmin.id}`,
+      { headers: { Cookie: funcionarioCookie } }
+    );
+    assert.equal(limitesPropriedadeAlheia.status, 404);
+    const alterarPadraoFuncionario = await fetch(`${base}/api/limites-climaticos`, {
+      method: "PUT",
+      headers: { Cookie: funcionarioCookie, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        temperaturaMinima: 10, temperaturaMaxima: 25,
+        umidadeMinima: 40, umidadeMaxima: 70
+      })
+    });
+    assert.equal(alterarPadraoFuncionario.status, 403);
+
     const resumoFuncionario = await fetch(`${base}/api/resumo`, {
       headers: { Cookie: funcionarioCookie }
     });
     assert.equal(resumoFuncionario.status, 200);
-    assert.equal((await resumoFuncionario.json()).sensoresTotal, 2);
+    const dadosResumoFuncionario = await resumoFuncionario.json();
+    assert.equal(dadosResumoFuncionario.sensoresTotal, 1);
+    assert.deepEqual(dadosResumoFuncionario.sensores[0].limites, {
+      temperaturaMinima: 10, temperaturaMaxima: 25,
+      umidadeMinima: 40, umidadeMaxima: 70
+    });
+    const relatorioComLimitesDaPropriedade = await fetch(
+      `${base}/api/relatorio-tecnico?inicio=${dataHoje}&fim=${dataHoje}`,
+      { headers: { Cookie: engenheiroCookie } }
+    );
+    assert.equal(relatorioComLimitesDaPropriedade.status, 200);
+    const dadosRelatorioComLimites = await relatorioComLimitesDaPropriedade.json();
+    assert.equal(dadosRelatorioComLimites.resumo.leiturasForaTemperatura, 1);
+    assert.equal(
+      dadosRelatorioComLimites.limitesPorPropriedade.find(item => item.id === fazendaAna.id).temperaturaMaxima,
+      25
+    );
+    const sensoresFuncionario = await fetch(`${base}/api/sensores`, {
+      headers: { Cookie: funcionarioCookie }
+    });
+    assert.equal(sensoresFuncionario.status, 200);
+    assert.deepEqual((await sensoresFuncionario.json()).sensores.map(sensor => sensor.id), ["sensor-a"]);
 
     const historicoFuncionario = await fetch(`${base}/api/leituras`, {
       headers: { Cookie: funcionarioCookie }
     });
     assert.equal(historicoFuncionario.status, 200);
     assert.deepEqual(
-      (await historicoFuncionario.json()).leituras.map(leitura => leitura.sensor).sort(),
-      ["sensor-a", "sensor-b"]
+      (await historicoFuncionario.json()).leituras.map(leitura => leitura.sensor),
+      ["sensor-a"]
     );
 
     const historicoFuncionarioPorId = await fetch(`${base}/api/leituras?sensor=sensor-b`, {
       headers: { Cookie: funcionarioCookie }
     });
-    assert.equal(historicoFuncionarioPorId.status, 200);
-    assert.deepEqual(
-      (await historicoFuncionarioPorId.json()).leituras.map(leitura => leitura.sensor),
-      ["sensor-b"]
-    );
+    assert.equal(historicoFuncionarioPorId.status, 404);
 
     const alarmesFuncionario = await fetch(`${base}/api/alarmes`, {
       headers: { Cookie: funcionarioCookie }
     });
     assert.equal(alarmesFuncionario.status, 200);
     const dadosAlarmesFuncionario = await alarmesFuncionario.json();
-    assert.ok(dadosAlarmesFuncionario.alarmes.some(alarme => alarme.sensor === "sensor-a"));
-    assert.ok(dadosAlarmesFuncionario.alarmes.some(alarme => alarme.sensor === "sensor-b"));
+    assert.ok(dadosAlarmesFuncionario.alarmes.length > 0);
+    assert.ok(dadosAlarmesFuncionario.alarmes.every(alarme => alarme.sensor === "sensor-a"));
 
     const propriedadesFuncionario = await fetch(`${base}/api/propriedades`, {
       headers: { Cookie: funcionarioCookie }
     });
-    assert.equal(propriedadesFuncionario.status, 403);
+    assert.equal(propriedadesFuncionario.status, 200);
+    assert.deepEqual(
+      (await propriedadesFuncionario.json()).propriedades.map(propriedade => propriedade.id),
+      [fazendaAna.id]
+    );
 
     const criarPropriedadeFuncionario = await fetch(`${base}/api/propriedades`, {
       method: "POST",
@@ -283,7 +367,76 @@ test("superadmin consulta todas as propriedades e engenheiros veem apenas as pr�
       headers: { Cookie: funcionarioCookie, "Content-Type": "application/json" },
       body: JSON.stringify({ id: fazendaAdmin.id, nome: "Alteração indevida", areaHa: 1 })
     });
-    assert.equal(alterarPropriedadeFuncionario.status, 403);
+    assert.equal(alterarPropriedadeFuncionario.status, 404);
+
+    const alterarPropriedadeAtribuida = await fetch(`${base}/api/propriedades`, {
+      method: "PATCH",
+      headers: { Cookie: funcionarioCookie, "Content-Type": "application/json" },
+      body: JSON.stringify({ id: fazendaAna.id, nome: "Fazenda Ana pelo funcionário", areaHa: 96 })
+    });
+    assert.equal(alterarPropriedadeAtribuida.status, 200);
+
+    const engenheiroAtribuidoCookie = await entrar(base, "bia@example.test", senha, senhaDoDia);
+    const configurarLimitesEngenheiro = await fetch(`${base}/api/limites-climaticos`, {
+      method: "PUT",
+      headers: { Cookie: engenheiroAtribuidoCookie, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        propriedadeId: fazendaAdmin.id,
+        temperaturaMinima: 5, temperaturaMaxima: 35,
+        umidadeMinima: 30, umidadeMaxima: 90
+      })
+    });
+    assert.equal(configurarLimitesEngenheiro.status, 200);
+    const limitesAlheiosEngenheiro = await fetch(`${base}/api/limites-climaticos`, {
+      method: "PUT",
+      headers: { Cookie: engenheiroAtribuidoCookie, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        propriedadeId: fazendaAna.id,
+        temperaturaMinima: 5, temperaturaMaxima: 35,
+        umidadeMinima: 30, umidadeMaxima: 90
+      })
+    });
+    assert.equal(limitesAlheiosEngenheiro.status, 404);
+    const limitesAdmin = await fetch(`${base}/api/limites-climaticos`, {
+      headers: { Cookie: adminCookie }
+    });
+    assert.equal(limitesAdmin.status, 200);
+    const dadosLimitesAdmin = await limitesAdmin.json();
+    assert.equal(dadosLimitesAdmin.limitesVariados, true);
+    assert.deepEqual(dadosLimitesAdmin.padrao, {
+      temperaturaMinima: 20, temperaturaMaxima: 30,
+      umidadeMinima: 50, umidadeMaxima: 80
+    });
+    const propriedadesEngenheiroAtribuido = await fetch(`${base}/api/propriedades`, {
+      headers: { Cookie: engenheiroAtribuidoCookie }
+    });
+    assert.equal(propriedadesEngenheiroAtribuido.status, 200);
+    assert.deepEqual(
+      (await propriedadesEngenheiroAtribuido.json()).propriedades.map(propriedade => propriedade.id),
+      [fazendaAdmin.id]
+    );
+    const edicaoNegadaEngenheiroAtribuido = await fetch(`${base}/api/propriedades`, {
+      method: "PATCH",
+      headers: { Cookie: engenheiroAtribuidoCookie, "Content-Type": "application/json" },
+      body: JSON.stringify({ id: fazendaAna.id, nome: "Alteração não autorizada", areaHa: 85 })
+    });
+    assert.equal(edicaoNegadaEngenheiroAtribuido.status, 404);
+    const editarPropriedadeAtribuidaEngenheiro = await fetch(`${base}/api/propriedades`, {
+      method: "PATCH",
+      headers: { Cookie: engenheiroAtribuidoCookie, "Content-Type": "application/json" },
+      body: JSON.stringify({ id: fazendaAdmin.id, nome: "Fazenda Admin pela engenheira", areaHa: 141 })
+    });
+    assert.equal(editarPropriedadeAtribuidaEngenheiro.status, 200);
+    const restaurarLimites = await fetch(
+      `${base}/api/limites-climaticos?propriedadeId=${fazendaAdmin.id}`,
+      {
+        method: "DELETE",
+        headers: { Cookie: engenheiroAtribuidoCookie, "Content-Type": "application/json" },
+        body: JSON.stringify({})
+      }
+    );
+    assert.equal(restaurarLimites.status, 200);
+    assert.equal((await restaurarLimites.json()).herdados, true);
   } finally {
     await pararServidor(child);
     fs.rmSync(dir, { recursive: true, force: true });
