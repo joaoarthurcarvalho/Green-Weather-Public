@@ -112,32 +112,34 @@
     </article>
   </section>
 
-  <section class="resumo-card card" aria-labelledby="resumo-inteligente-titulo">
-    <div class="resumo-cabecalho">
-      <div>
-        <h2 id="resumo-inteligente-titulo">Resumo inteligente</h2>
-        <p>Análise local de alarmes e leituras das últimas 24 horas.</p>
+  <div class="insights-painel">
+    <section class="resumo-card card" aria-labelledby="resumo-inteligente-titulo">
+      <div class="resumo-cabecalho">
+        <div>
+          <h2 id="resumo-inteligente-titulo">Resumo inteligente</h2>
+          <p>Análise local de alarmes e leituras das últimas 24 horas.</p>
+        </div>
+        <span class="resumo-selo">Análise local</span>
       </div>
-      <span class="resumo-selo">Análise local</span>
-    </div>
-    <p id="resumo-inteligente-texto" class="resumo-texto" aria-live="polite">Analisando os dados recentes…</p>
-    <ul id="resumo-inteligente-destaques" class="resumo-destaques"></ul>
-    <p class="resumo-nota">Gerado a partir dos dados do sistema; não usa um serviço externo de IA.</p>
-  </section>
+      <p id="resumo-inteligente-texto" class="resumo-texto" aria-live="polite">Analisando os dados recentes…</p>
+      <ul id="resumo-inteligente-destaques" class="resumo-destaques"></ul>
+      <p class="resumo-nota">Gerado a partir dos dados do sistema; não usa um serviço externo de IA.</p>
+    </section>
 
-  <section class="previsao-card card" aria-labelledby="previsao-titulo">
-    <div class="previsao-cabecalho">
-      <div>
-        <h2 id="previsao-titulo">Tendência para as próximas horas</h2>
-        <p>Estimativa baseada nas últimas 6 horas de leituras dos sensores.</p>
+    <section class="previsao-card card" aria-labelledby="previsao-titulo">
+      <div class="previsao-cabecalho">
+        <div>
+          <h2 id="previsao-titulo">Tendência para as próximas horas</h2>
+          <p>Estimativa baseada nas últimas 6 horas de leituras dos sensores.</p>
+        </div>
+        <span class="previsao-selo">Até 3 horas</span>
       </div>
-      <span class="previsao-selo">Até 3 horas</span>
-    </div>
-    <div id="previsao-lista" class="previsao-lista" aria-live="polite">
-      <p class="previsao-vazio">Analisando as leituras recentes…</p>
-    </div>
-    <p class="previsao-nota">Estimativa estatística de tendência, não é garantia. Requer pelo menos 5 leituras recentes ao longo de 1 hora.</p>
-  </section>
+      <div id="previsao-lista" class="previsao-lista" aria-live="polite">
+        <p class="previsao-vazio">Analisando as leituras recentes…</p>
+      </div>
+      <p class="previsao-nota">Estimativa estatística de tendência, não é garantia. Requer pelo menos 5 leituras recentes ao longo de 1 hora.</p>
+    </section>
+  </div>
 </main>
 
 <script src="../js/vistas-dashboard.js"></script>
