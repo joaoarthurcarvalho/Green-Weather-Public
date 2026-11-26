@@ -6,6 +6,8 @@ Sistema web para monitoramento de temperatura e umidade, com cadastro de usuári
 
 ```text
 GreenWeather/
+├── .github/
+│   └── workflows/             # publicação da interface estática
 ├── src/
 │   ├── server.js              # servidor HTTP, API, autenticação e arquivos estáticos
 │   └── domain/                # regras de alarmes, previsão e resumo inteligente
@@ -16,6 +18,7 @@ GreenWeather/
 ├── cloud/                     # documentação de infraestrutura em nuvem
 ├── relatorios/                # relatórios técnicos e de mudanças
 ├── data/                      # dados locais, ignorados pelo Git
+├── ESTIMATIVA-TENDENCIA.md    # critérios e estados da estimativa local
 ├── package.json               # comandos e versão mínima do Node.js
 └── README.md
 ```
@@ -28,6 +31,27 @@ nas pastas `/css/`, `/js/` e `/assets/`. Para compatibilidade, `/` abre o login,
 e os atalhos `/<pagina>.html` redirecionam para as páginas correspondentes em
 `/html/` (inclusive funcionários e propriedades). O atalho legado
 `/cadastro.html` continua direcionando ao login.
+
+## Comunicação entre os componentes
+
+O front-end e a API usam a mesma origem. A API HTTP faz parte do servidor
+Node.js; não é um serviço separado.
+
+```text
+Sensores ── POST /api/leituras (x-api-key) ──┐
+                                             v
+Navegador (front-end em public/) <── HTTP/JSON ──> API (/api/*)
+                                                   │
+                                                   v
+                                   Servidor Node.js (src/server.js)
+                                      │ regras: src/domain/
+                                      v
+                                  Arquivos em data/
+```
+
+O servidor também entrega os arquivos estáticos do front-end. As chamadas de
+leitura e gestão passam pelas rotas `/api/*`; o servidor valida a sessão e o
+escopo de acesso antes de consultar ou persistir dados.
 
 ## O que já existe
 
@@ -126,7 +150,7 @@ e pode ser usado por monitoração ou verificações de prontidão.
 1. **Persistência e concorrência:** os dados são arquivos JSON/JSONL carregados em memória. Recomenda-se migrar para SQLite ou PostgreSQL, com migrações e tratamento de concorrência.
 2. **Proteção operacional:** configurar HTTPS, backups testados e política de retenção para leituras e alarmes. Os arquivos em `data/` contêm dados operacionais e não devem ser publicados.
 3. **Cobertura de testes:** há testes unitários e de integração para domínio, autenticação, propriedades e relatórios; simuladores e rotas secundárias podem receber mais cobertura automatizada.
-4. **Painel conectado aos dados reais:** o resumo inteligente, a previsão e os alarmes consultam dados reais; cartões de valores atuais, tabela inicial e gráfico em `public/html/dashboard.html` ainda usam valores demonstrativos e precisam ser conectados às APIs.
+4. **Publicação do back-end:** o workflow versionado em `.github/workflows/development_green-weather.yml` publica somente `public/`. Para usar a API na hospedagem, o servidor Node.js e sua persistência precisam ser publicados e configurados também.
 
 ### Prioridade média
 

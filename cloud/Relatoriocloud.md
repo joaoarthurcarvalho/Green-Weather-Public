@@ -16,65 +16,74 @@ Foram utilizadas as seguintes tecnologias e ferramentas:
 - **GitHub Actions:** ferramenta utilizada para automatizar o processo de publicação.
 - **HTML, CSS e JavaScript:** tecnologias utilizadas na construção da interface web.
 
-## 3. Implementação da infraestrutura na Azure
+## 3. Estrutura de hospedagem descrita no repositório
 
-Inicialmente, foi criado um Resource Group na Microsoft Azure, denominado GreenWeather, para organizar os recursos utilizados no projeto.
+Este relatório registra a existência de um Resource Group chamado GreenWeather e
+de um Azure App Service chamado Green-Weather. A configuração atual desses
+recursos não é verificada pelo repositório.
 
-Em seguida, foi criado um recurso Azure App Service com o nome Green-Weather, responsável por disponibilizar a aplicação web na internet.
-
-O App Service foi configurado para hospedar os arquivos estáticos do sistema, incluindo páginas HTML, folhas de estilo CSS, arquivos JavaScript e recursos visuais.
+O repositório contém um workflow do GitHub Actions para publicar os arquivos
+estáticos da interface. A existência desse workflow não confirma, por si só, a
+configuração atual do App Service nem a disponibilidade da API na URL pública.
 
 A aplicação foi organizada em uma pasta chamada `public`, que contém os arquivos necessários para a publicação.
 
-A URL disponibilizada pelo serviço é:
+A URL registrada anteriormente neste relatório é:
 
 https://green-weather.azurewebsites.net
 
 ## 4. Integração com GitHub
 
-Para facilitar a atualização da aplicação, foi realizada a integração entre o Azure App Service e o repositório GitHub do projeto.
+O workflow versionado integra o GitHub Actions com o Azure App Service para
+publicar a interface estática.
 
 Repositório: Green-Weather-Public
 
 A integração permite utilizar o código armazenado no GitHub como origem para as publicações realizadas na Azure.
 
-Também foi configurada uma credencial de publicação, armazenada nos Secrets do GitHub, evitando que informações sensíveis fossem inseridas diretamente no código-fonte.
+O workflow espera a credencial de publicação no GitHub Secret
+`AZURE_WEBAPP_PUBLISH_PROFILE`. O repositório não permite verificar se esse
+secret está configurado na conta.
 
 ## 5. Automação de publicação (CI/CD)
 
-Na versão atual do repositório não está incluído um workflow em
-`.github/workflows/`. Portanto, o processo de CI/CD descrito nesta etapa é uma
-configuração planejada ou aplicada diretamente no ambiente Azure, não um arquivo
-versionado que possa ser executado pelo projeto neste estado.
+O workflow versionado em
+`.github/workflows/development_green-weather.yml` é acionado na branch
+`development` ou manualmente. Ele verifica alguns arquivos da interface e envia
+somente `public/` usando `azure/webapps-deploy@v3`.
 
-Quando o workflow estiver configurado para a branch `development`, o processo
-esperado é:
+O workflow atual **não** publica `src/server.js`, `package.json` ou os dados em
+`data/`. Assim, não deve ser descrito como publicação da API Node.js. Para que
+as chamadas `/api/*` funcionem na hospedagem, é necessário implantar o servidor
+e configurar sua persistência e variáveis de ambiente separadamente.
 
-O processo de publicação funciona da seguinte maneira:
+O processo versionado atualmente é:
 
 1. O desenvolvedor realiza alterações no projeto.
 2. As alterações são enviadas para o GitHub.
-3. O GitHub Actions inicia automaticamente o workflow.
-4. Os arquivos principais da aplicação são validados.
-5. A pasta `public` é enviada para o Azure App Service.
-6. A aplicação recebe a atualização publicada.
+3. O GitHub Actions inicia o workflow.
+4. Arquivos básicos de `public/` são validados.
+5. Somente a pasta `public/` é enviada ao Azure App Service.
 
 Para realizar a implantação, foi utilizada a ação `azure/webapps-deploy@v3`.
 
 Essa configuração facilita a manutenção do sistema e reduz a necessidade de realizar publicações manualmente.
 
-## 6. Segurança
+## 6. Segurança e configuração
 
 Durante a implementação, foram adotadas medidas básicas de segurança relacionadas à infraestrutura:
 
-- Armazenamento das credenciais de publicação nos GitHub Secrets.
-- Utilização de HTTPS para acesso à aplicação.
+- O workflow referencia `AZURE_WEBAPP_PUBLISH_PROFILE`; seu valor não está no
+  repositório e sua configuração deve ser verificada no GitHub.
+- HTTPS deve ser configurado no App Service/proxy; o workflow não verifica essa
+  configuração.
 - Separação das credenciais do código-fonte.
 - Restrição da exposição de informações sensíveis no repositório.
 
-Também foi necessário habilitar a opção SCM Basic Auth Publishing Credentials no Azure App Service para permitir o download do perfil de publicação utilizado na integração.
+O uso do perfil de publicação depende das configurações de publicação do Azure
+App Service, que não podem ser verificadas a partir do código versionado.
 
-## 7. Arquitetura da solução
+## 7. Arquitetura da publicação versionada
 
 A arquitetura implementada utiliza os seguintes componentes:
 
@@ -82,13 +91,18 @@ A arquitetura implementada utiliza os seguintes componentes:
 
 **GitHub Actions:** automação da validação e publicação da aplicação.
 
-**Azure App Service:** hospedagem dos arquivos da aplicação web.
+**Azure App Service:** recebe os arquivos estáticos `public/` por meio do
+workflow atual. O back-end Node.js não faz parte desse pacote.
 
 **Usuário:** acesso ao sistema por meio de um navegador utilizando o endereço disponibilizado pela Azure.
 
-O fluxo de funcionamento é:
+O fluxo de publicação versionado é:
 
-GitHub → GitHub Actions → Azure App Service → Usuário.
+GitHub → GitHub Actions → Azure App Service (public/) → Navegador.
+
+Na execução local, o navegador usa a API HTTP fornecida pelo mesmo servidor
+Node.js que entrega os arquivos estáticos; consulte o diagrama no README
+principal. Esse caminho local não comprova que a API esteja implantada na Azure.
 
 ## 8. Testes e validação
 
@@ -102,10 +116,10 @@ pois responde sem exigir autenticação e não expõe dados da aplicação.
 
 ## 9. Conclusão
 
-A implementação da infraestrutura Cloud do Green-Weather permitiu disponibilizar a aplicação web utilizando os serviços da Microsoft Azure.
+O repositório contém automação para publicar a interface estática no Azure App
+Service. O workflow não publica o back-end Node.js nem seus dados; a implantação
+da API, a persistência, a configuração HTTPS e a disponibilidade pública precisam
+ser verificadas e tratadas separadamente.
 
-A integração com o GitHub Actions também possibilitou automatizar o processo de publicação, facilitando futuras atualizações do sistema.
-
-Apesar das pendências identificadas durante os testes de acesso e autenticação, a estrutura de hospedagem e o processo de implantação foram configurados.
-
-Dessa forma, foi possível aplicar conceitos de computação em nuvem, hospedagem de aplicações, gerenciamento de recursos e integração contínua e entrega contínua (CI/CD) utilizando ferramentas da Microsoft Azure e GitHub.
+O documento descreve a infraestrutura e a automação que constam no repositório,
+mas não certifica o estado atual dos recursos Azure ou dos secrets do GitHub.
